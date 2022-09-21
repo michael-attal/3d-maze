@@ -1,0 +1,32 @@
+@startuml 3D Maze Diagram
+
+class Maze3d {
+    - cells
+    - wallsPosition: Map 
+    + toString: Representation of the maze
+}
+
+
+abstract class Maze3dGenerator {
+    + generate: Maze3d
+    + measureAlgorithmTime: Time
+}
+
+SimpleMaze3dGenerator <|-- Maze3dGenerator
+class SimpleMaze3dGenerator  {
+    + generate: Maze3d
+    + measureAlgorithmTime: Time
+}
+
+DFSMaze3dGenerator <|-- Maze3dGenerator
+class DFSMaze3dGenerator {
+    + generate: Maze3d
+    + measureAlgorithmTime: Time
+}
+
+WilsonMaze3dGenerator <|-- Maze3dGenerator
+class WilsonMaze3dGenerator {
+    + generate: Maze3d
+    + measureAlgorithmTime: Time
+}
+@enduml
