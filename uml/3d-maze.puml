@@ -24,8 +24,8 @@ class DFSMaze3dGenerator {
     + measureAlgorithmTime: Time
 }
 
-WilsonMaze3dGenerator <|-- Maze3dGenerator
-class WilsonMaze3dGenerator {
+AldousbroderMaze3dGenerator <|-- Maze3dGenerator
+class AldousbroderMaze3dGenerator {
     + generate: Maze3d
     + measureAlgorithmTime: Time
 }

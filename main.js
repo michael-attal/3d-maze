@@ -13,8 +13,8 @@ maze = dfsMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols w
 console.log(maze.toString());
 
 let aldousbroderMaze3dGenerator = new AldousbroderMaze3dGenerator();
-// let maze = aldousbroderMaze3dGenerator.generate(2, 5, 5); // NOTE: 2 stairs, 5 rows, 5 cols with AldousbroderMaze3dGenerator
-
+// maze = aldousbroderMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with AldousbroderMaze3dGenerator
+// console.log(maze.toString());
 
 
 // console.log(simpleMaze3dGenerator.measureAlgorithmTime([30, 50, 50])); // NOTE: Uncomment this line to see the time it take to generate a 30x50x50 maze with SimpleMaze3dGenerator class.
