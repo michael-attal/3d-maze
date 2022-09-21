@@ -92,11 +92,11 @@ class DfsMaze3dGenerator extends Maze3DGenerator {
                 currentCell = stack.pop();
             }
         }
-        // NOTE: Select a randon cell from the visited cells (that way we are sure that at least one path exist to the goal).
+        // NOTE: Select a random cell from the visited cells (that way we are sure that at least one path exist to the goal).
         goalCell = visited[Math.floor(Math.random() * visited.length)];
         goalCell.content = Cell.availableContents.get("goal");
 
-        return new Maze3d(cells, startCell, currentCell); // NOTE: The last current cell is the goal cell.
+        return new Maze3d(cells, startCell, goalCell);
     }
 
 }
