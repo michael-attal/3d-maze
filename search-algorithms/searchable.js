@@ -1,3 +1,13 @@
+class Node {
+    state
+    parent
+
+    constructor(state, parent) {
+        this.state = state;
+        this.parent = parent;
+    }
+}
+
 class Searchable {
     constructor() {
         if (this === Searchable) {
@@ -5,7 +15,9 @@ class Searchable {
         }
     }
 
-
+    search() {
+        throw new Error("This method need to be implemented!");
+    }
 }
 
-export default Searchable;
+export { Node, Searchable };

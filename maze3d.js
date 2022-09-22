@@ -80,14 +80,14 @@ class Maze3d {
     /** @type {Array<Array<Array<Cell>>>} */
     #cells
     /** @type {Cell} */
-    #startPositionCell // NOTE: The start cell of the maze - Currently not used in Maze3d class but can be used in the future
+    #startCell // NOTE: The start cell of the maze - Currently not used in Maze3d class but can be used in the future
     /** @type {Cell} */
     #goalCell // NOTE: The exit cell of the maze is the goalCell - Currently not used in Maze3d class but can be used in the future
 
-    constructor(cells, startPositionCell, goalCell) {
+    constructor(cells, startCell, goalCell) {
         // NOTE: z,y,x array of cell objects where z represent the stair, y the row and x the column. Example : cells[1][2][3] contain the cell at z=1, y=2, x=3 position in the maze
         this.cells = cells;
-        this.startPositionCell = startPositionCell
+        this.startCell = startCell
         this.goalCell = goalCell;
     }
 
@@ -95,8 +95,8 @@ class Maze3d {
         return this.#cells;
     }
 
-    get startPositionCell() {
-        return this.#startPositionCell;
+    get startCell() {
+        return this.#startCell;
     }
 
     get goalCell() {
@@ -115,8 +115,8 @@ class Maze3d {
         this.#cells = cells;
     }
 
-    set startPositionCell(cell) {
-        this.#startPositionCell = cell;
+    set startCell(cell) {
+        this.#startCell = cell;
     }
 
     set goalCell(cell) {

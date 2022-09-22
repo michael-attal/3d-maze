@@ -1,4 +1,4 @@
-import Searchable from "./searchable";
+import { Node, Searchable } from './searchable.js';
 
 class AStar extends Searchable {
 
