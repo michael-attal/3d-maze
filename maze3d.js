@@ -21,12 +21,12 @@ class Cell {
      */
     constructor(z, y, x) {
         this.walls = {
-            "left": true,
-            "right": true,
-            "forward": true,
-            "backward": true,
-            "up": false,
-            "down": false
+            left: true,
+            right: true,
+            forward: true,
+            backward: true,
+            up: false,
+            down: false
         };
         this.content = " "; // NOTE: Init at empty cell, can be one of the following: empty -> " ", startPosition -> "S", goal -> "G", player -> "P", elevatorUp -> "↑", elevatorDown -> "↓", elevatorUpAndDown -> "↕"
 

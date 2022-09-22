@@ -14,7 +14,7 @@ class Maze3dGenerator {
     measureAlgorithmTime(args) {
         let dateTimeBeforeGenerate = Date.now();
         let maze = this.generate(...args);
-        console.log(maze.toString());
+        // console.log(maze.toString());
         let dateTimeAfterGenerate = Date.now();
         let differenceInMs = dateTimeAfterGenerate - dateTimeBeforeGenerate;
         return "Generate function of " + this.constructor.name + " take " + differenceInMs + " ms, which is equal to " + differenceInMs / 1000 + " seconds.";
@@ -97,14 +97,14 @@ class Maze3dGenerator {
         return cells;
     }
 
-    getRandomStartPosition(stair, row, col) {
-        let startStair = Math.floor(Math.random() * stair);
-        let startRow = Math.floor(Math.random() * row);
-        let startCol = Math.floor(Math.random() * col);
+    getRandomCellPosition(stair, row, col) {
+        let cellStair = Math.floor(Math.random() * stair);
+        let cellRow = Math.floor(Math.random() * row);
+        let cellCol = Math.floor(Math.random() * col);
         return {
-            stair: startStair,
-            row: startRow,
-            col: startCol
+            stair: cellStair,
+            row: cellRow,
+            col: cellCol
         }
     }
 
