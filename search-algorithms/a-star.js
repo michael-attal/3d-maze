@@ -6,6 +6,7 @@ class AStar extends Searchable {
         super();
     }
 
+
 }
 
 export default AStar;

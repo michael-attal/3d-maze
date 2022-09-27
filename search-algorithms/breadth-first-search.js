@@ -41,16 +41,6 @@ class BreadthFirstSearch extends Searchable {
         }
         return "failure";
     }
-
-    // NOTE: This function will return the path which is all the node from the start node state to the goal node state.
-    solution(node) {
-        let solution = [];
-        while (node.parent) {
-            solution.push(node);
-            node = node.parent;
-        }
-        return solution;
-    }
 }
 
 export default BreadthFirstSearch;
