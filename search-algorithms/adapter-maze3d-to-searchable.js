@@ -1,5 +1,6 @@
 import { Cell, Maze3d } from "../maze3d.js";
 import { Searchable } from './searchable.js';
+import AStar from "./a-star.js";
 
 class AdapterMaze3dToSearchable {
     searchable
@@ -18,8 +19,9 @@ class AdapterMaze3dToSearchable {
     search() {
         let problem = {
             initialState: this.maze3d.startCell,
+            goalState: this.maze3d.goalCell,
             goalTest: (cell) => {
-                return cell === this.maze3d.goalCell
+                return cell === this.maze3d.goalCell;
             },
             actions: (currentCellToCheckNeighbours) => {
                 /** @type Cell */
@@ -50,9 +52,23 @@ class AdapterMaze3dToSearchable {
                 }
 
                 return neighbourCells;
-            }
+            },
+            heurestic: (node, startNode, goalState) => {
+                // NOTE: Return the diagonal from previous node state to current node state + diagonal current node state to goal state. - I don't know why the value is overestimated and don't work as a good heurestic value.
+                // let diagonalPrvToCurr = Math.sqrt(Math.abs(node.state.row - startNode.state.row) ** 2 + Math.abs(node.state.col - startNode.state.col) ** 2);
+                // let diagonalCurrToGoal = Math.sqrt(Math.abs(goalState.row - node.state.row) ** 2 + Math.abs(goalState.col - node.state.col) ** 2);
+                // return diagonalPrvToCurr + diagonalCurrToGoal;
+
+                // NOTE: This heuristic value is not optimal since it's not the diagonal but it works perfectly.
+                return Math.abs(node.state.row - startNode.state.row) + Math.abs(node.state.col - startNode.state.col);
+
+            },
         };
-        return this.searchable.search(problem);
+        if (this.searchable.constructor.name === "AStar") {
+            return this.searchable.search(problem, problem.heurestic);
+        } else {
+            return this.searchable.search(problem);
+        }
     }
 
 }
