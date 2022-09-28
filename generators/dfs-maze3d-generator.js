@@ -30,6 +30,7 @@ class DfsMaze3dGenerator extends Maze3DGenerator {
             let isStartCell = currentCell === startCell;
 
             // NOTE: It is better to select a random neighbour, but this is done in my other algorithm choice (Aldous Broder)
+            // TODO: Maybe use something like direction = [(0, 0, 1), (0, 0, -1), (0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]; instead of conditions below
             if (currentCell.col + 1 < col) {
                 nextCell = cells[currentCell.stair][currentCell.row][currentCell.col + 1];
             } else if (!isStartCell && currentCell.stair + 1 < stair) {
