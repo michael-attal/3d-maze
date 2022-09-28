@@ -53,14 +53,18 @@ class AdapterMaze3dToSearchable {
 
                 return neighbourCells;
             },
-            heurestic: (node, startNode, goalState) => {
-                // NOTE: Return the diagonal from previous node state to current node state + diagonal current node state to goal state. - I don't know why the value is overestimated and don't work as a good heurestic value.
-                // let diagonalPrvToCurr = Math.sqrt(Math.abs(node.state.row - startNode.state.row) ** 2 + Math.abs(node.state.col - startNode.state.col) ** 2);
-                // let diagonalCurrToGoal = Math.sqrt(Math.abs(goalState.row - node.state.row) ** 2 + Math.abs(goalState.col - node.state.col) ** 2);
-                // return diagonalPrvToCurr + diagonalCurrToGoal;
-
-                // NOTE: This heuristic value is not optimal since it's not the diagonal but it works perfectly.
-                return Math.abs(node.state.row - startNode.state.row) + Math.abs(node.state.col - startNode.state.col);
+            heurestic: (currNode, prvNode, goalState) => {
+                //NOTE: Since the distance from the previous node state to current node state is always one (except for the first iteration, where prvNode is the same as currNode), we don't really need to use prvNode for the maze heurestic solve algorithm.
+                let cost = 0;
+                if (currNode !== prvNode) {
+                    cost += 1;
+                }
+                // NOTE: Return distance from current node state to goal state
+                // NOTE: If goal state is on another stair don't forget to add the cost to move to the stair - TODO: Maybe add extra cost if the elevator is hard to access ?
+                cost += Math.abs(goalState.stair - currNode.state.stair) + Math.abs(goalState.stair - currNode.state.stair)
+                // NOTE: Add the cost of "minimum" steps from current node state to goal state (without checking if any walls between them exists)
+                cost += Math.abs(goalState.row - currNode.state.row) + Math.abs(goalState.col - currNode.state.col);
+                return cost;
 
             },
         };

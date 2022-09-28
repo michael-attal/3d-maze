@@ -20,6 +20,7 @@ class AStar extends Searchable {
         while (frontier.length > 0) {
             frontier.sort((a, b) => a.priority - b.priority);
             let frontierObj = frontier.shift(); // TODO: Maybe do a pop instead of shift for performance optimization (need to order by desc first) ?
+            let priorityOfNode = frontierObj.priority;
             node = frontierObj.node;
             explored.add(node.state);
 
@@ -32,6 +33,8 @@ class AStar extends Searchable {
 
             for (let action of problem.actions(node.state)) {
                 let child = new Node(action, node);
+                this.stateCounter++;
+
                 if (problem.goalTest(child.state)) {
                     return {
                         solution: this.solution(child),
@@ -40,12 +43,11 @@ class AStar extends Searchable {
                 }
 
                 if (explored.has(child.state) === false) {
-                    let priorityChild = heuresticFunc(child, node, problem.goalState);
+                    let priorityChild = priorityOfNode + heuresticFunc(child, node, problem.goalState); // NOTE: Don't forget to add previous cost (defined by priorityOfNode)
                     let newFrontierObj = {
                         priority: priorityChild,
                         node: child
                     }
-                    this.stateCounter++;
 
                     let existInFrontier = false;
                     for (let i = 0; i < frontier.length; i++) {

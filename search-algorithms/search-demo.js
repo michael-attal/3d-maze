@@ -14,7 +14,7 @@ class SearchDemo {
         let depthFirstSearch = new DepthFirstSearch();
         let aStar = new AStar();
         let aldousbroderMaze3dGenerator = new AldousbroderMaze3dGenerator();
-        let maze = aldousbroderMaze3dGenerator.generate(2, 5, 5); // NOTE: 2 stairs, 5 rows, 5 cols with AldousbroderMaze3dGenerator
+        let maze = aldousbroderMaze3dGenerator.generate(3, 5, 5); // NOTE: 2 stairs, 5 rows, 5 cols with AldousbroderMaze3dGenerator
         console.log(maze.toString());
 
         let adapterMaze3dToSearchableBfs = new AdapterMaze3dToSearchable(breadthFirstSearch, maze);
