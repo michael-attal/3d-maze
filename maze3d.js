@@ -1,4 +1,22 @@
+class DirectionHelp {
+    stair
+    row
+    col
+
+    constructor(stair, row, col) {
+        this.stair = stair;
+        this.row = row;
+        this.col = col
+    }
+
+    get arrFormat() {
+        return [this.stair, this.row, this.col];
+    }
+}
+
 class Cell {
+
+    /** @type {Map<String, String} */
     static availableContents = new Map([
         ["empty", " "],
         ["startPosition", "S"],
@@ -8,6 +26,43 @@ class Cell {
         ["elevatorDown", "↓"],
         ["elevatorUpAndDown", "↕"],
     ]);
+
+    /** @type {Map<String, Array<DirectionHelp>} */
+    static availableDirections = new Map([
+        ["left", new DirectionHelp(0, 0, -1)],
+        ["right", new DirectionHelp(0, 0, 1)],
+        ["forward", new DirectionHelp(0, -1, 0)],
+        ["backward", new DirectionHelp(0, 1, 0)],
+        ["down", new DirectionHelp(-1, 0, 0)],
+        ["up", new DirectionHelp(1, 0, 0)],
+    ]);
+
+    static oppositeDirections = new Map([
+        ["left", "right"],
+        ["right", "left"],
+        ["forward", "backward"],
+        ["backward", "forward"],
+        ["up", "down"],
+        ["down", "up"],
+    ]);
+
+    static contentFromDirectionName = new Map([
+        ["left", "empty"],
+        ["right", "empty"],
+        ["forward", "empty"],
+        ["backward", "empty"],
+        ["up", "elevatorUp"],
+        ["down", "elevatorDown"],
+    ]);
+
+    static getDirectionNameFromIndex(index) {
+        let key = Array.from(Cell.availableDirections.keys())[index];
+        return key;
+    }
+
+    static getCellContentFromDirectionName(name) {
+        return Cell.availableContents.get(Cell.contentFromDirectionName.get(name));
+    }
 
     #walls
     #content
@@ -205,4 +260,4 @@ class Maze3d {
 }
 
 
-export { Cell, Maze3d };
+export { DirectionHelp, Cell, Maze3d };

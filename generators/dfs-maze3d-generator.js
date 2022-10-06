@@ -23,71 +23,50 @@ class DfsMaze3dGenerator extends Maze3DGenerator {
         stack.push(startCell);
 
         let currentCell = startCell;
+        let directions = Cell.availableDirections;
 
         while (stack.length > 0) {
             /** @type {Cell} */
             let nextCell;
-            let isStartCell = currentCell === startCell;
+            let isCurrentCellStartCell = currentCell === startCell;
+            let nextCellDirectionName;
 
-            // NOTE: It is better to select a random neighbour, but this is done in my other algorithm choice (Aldous Broder)
-            // TODO: Maybe use something like direction = [(0, 0, 1), (0, 0, -1), (0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]; instead of conditions below
-            if (currentCell.col + 1 < col) {
-                nextCell = cells[currentCell.stair][currentCell.row][currentCell.col + 1];
-            } else if (!isStartCell && currentCell.stair + 1 < stair) {
-                // NOTE: Don't add stair if the current cell is the start cell
-                nextCell = cells[currentCell.stair + 1][currentCell.row][currentCell.col];
-            } else if (currentCell.row - 1 >= 0) {
-                nextCell = cells[currentCell.stair][currentCell.row - 1][currentCell.col];
-            } else if (!isStartCell && currentCell.stair - 1 >= 0) {
-                nextCell = cells[currentCell.stair - 1][currentCell.row][currentCell.col];
-            } else if (currentCell.col - 1 >= 0) {
-                nextCell = cells[currentCell.stair][currentCell.row][currentCell.col - 1];
-            } else if (currentCell.row + 1 < row) {
-                nextCell = cells[currentCell.stair][currentCell.row + 1][currentCell.col];
+            // NOTE: Get the next random cell neighbour
+            while (nextCell === undefined) {
+                let nextCellDirectionIndex = Math.floor(Math.random() * directions.size);
+                nextCellDirectionName = Cell.getDirectionNameFromIndex(nextCellDirectionIndex);
+                let nextCellDirection = Cell.availableDirections.get(nextCellDirectionName);
+
+                // NOTE: Prepare the next cell position
+                let nextStair = currentCell.stair + nextCellDirection.stair;
+                let nextRow = currentCell.row + nextCellDirection.row;
+                let nextCol = currentCell.col + nextCellDirection.col;
+
+                // NOTE: Check if next cell is valid. We should also not go to the next up or down cell if the current cell is the start cell to avoid replace it's content to an elevator.
+                // TODO: Ask to Roi if the first of below conditions is OK or should be replace by something else more readble.
+                if (((nextCellDirectionName !== "up" && nextCellDirectionName !== "down") || isCurrentCellStartCell === false) &&
+                    nextStair >= 0 && nextStair < stair &&
+                    nextRow >= 0 && nextRow < row &&
+                    nextCol >= 0 && nextCol < col) {
+                    nextCell = cells[nextStair][nextRow][nextCol];
+                }
             }
 
             if (visited.indexOf(nextCell) === -1) {
                 // NOTE: Remove the wall between the current cell and the chosen neighbour.
-                if (currentCell.stair === nextCell.stair) {
-                    if (currentCell.row === nextCell.row) {
-                        if (currentCell.col < nextCell.col) {
-                            currentCell.walls.right = false;
-                            nextCell.walls.left = false;
-                        } else {
-                            currentCell.walls.left = false;
-                            nextCell.walls.right = false;
-                        }
-                    } else {
-                        if (currentCell.row < nextCell.row) {
-                            currentCell.walls.backward = false;
-                            nextCell.walls.forward = false;
-                        } else {
-                            currentCell.walls.forward = false;
-                            nextCell.walls.backward = false;
-                        }
-                    }
-                } else {
-                    if (currentCell.stair < nextCell.stair) {
-                        currentCell.walls.up = false;
-                        nextCell.walls.down = false;
-                        currentCell.content = Cell.availableContents.get("elevatorUp");
+                currentCell.walls[nextCellDirectionName] = false;
+                nextCell.walls[Cell.oppositeDirections.get(nextCellDirectionName)] = false;
 
-                        // // NOTE: Create upAndDown randomly - Uncomment if we want to create elevatorUpAndDown randomly and duplicate this code in the else condition
-                        // if (Math.random() >= 0.5) {
-                        //     if ((currentCell.stair > 0 && currentCell.stair < stair - 1)) {
-                        //         currentCell.content = Cell.availableContents.get("elevatorUpAndDown");
-                        //     } else {
-                        //         currentCell.content = Cell.availableContents.get(elevatorToAdd);
-                        //     }
-                        // } else {
-                        //     currentCell.content = Cell.availableContents.get(elevatorToAdd);
-                        // }
-
-                    } else {
-                        currentCell.walls.down = false;
-                        nextCell.walls.up = false;
-                        currentCell.content = Cell.availableContents.get("elevatorDown");
-                    }
+                if (!isCurrentCellStartCell) {
+                    currentCell.content = Cell.getCellContentFromDirectionName(nextCellDirectionName);
+                    // NOTE: Create upAndDown randomly - Uncomment if we want to create elevatorUpAndDown randomly
+                    // if (currentCell.content === Cell.availableContents.get("elevatorUp") || currentCell.content === Cell.availableContents.get("elevatorDown")) {
+                    //     if (Math.random() >= 0.5) {
+                    //         if ((currentCell.stair > 0 && currentCell.stair < stair - 1)) {
+                    //             currentCell.content = Cell.availableContents.get("elevatorUpAndDown");
+                    //         }
+                    //     }
+                    // }
                 }
 
                 visited.push(nextCell);

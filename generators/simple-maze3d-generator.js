@@ -34,113 +34,66 @@ class SimpleMaze3dGenerator extends Maze3DGenerator {
 
         // TODO: Maybe put the randomMoves to do in the parameter of the generate function?
         let randomMoves = 20;
-        let directions = ["left", "right", "forward", "backward", "up", "down"];
+        let directions = Cell.availableDirections;
+
         for (let i = 0; i < randomMoves; i++) {
+            let isCurrentCellStartCell = currentCell.content === Cell.availableContents.get("startPosition");
+
             if (i === randomMoves - 1) {
-                // NOTE: Create the goal at the last move
-                currentCell.content = Cell.availableContents.get("goal");
-                break;
+                if (isCurrentCellStartCell === false) {
+                    // NOTE: Create the goal at the last move (if it's not the start cell)
+                    currentCell.content = Cell.availableContents.get("goal");
+                    break;
+                } else {
+                    // NOTE: Add more random moves to not have the goal cell next to the start cell
+                    randomMoves *= 2;
+                    continue;
+                }
             }
+
             // NOTE: Get the next random cell direction
-            let nextCellDirectionIndex = Math.floor(Math.random() * directions.length);
-            let nextCellDirectionName = directions[nextCellDirectionIndex];
+            let nextCellDirectionIndex = Math.floor(Math.random() * directions.size);
+            let nextCellDirectionName = Cell.getDirectionNameFromIndex(nextCellDirectionIndex);
+            let nextCellDirection = Cell.availableDirections.get(nextCellDirectionName);
 
             // NOTE: Prepare the next cell position
-            let nextStair = currentCell.stair;
-            let nextRow = currentCell.row;
-            let nextCol = currentCell.col;
-            let isStartCell = currentCell.content === Cell.availableContents.get("startPosition");
+            let nextStair = currentCell.stair + nextCellDirection.stair;
+            let nextRow = currentCell.row + nextCellDirection.row;
+            let nextCol = currentCell.col + nextCellDirection.col;
 
-            switch (nextCellDirectionName) {
-                case "down":
-                    if (currentCell.stair === 0 || isStartCell) {
-                        // NOTE: If the random choice is down and there is no down stair, just pickup a random choice again.
-                        i--;
-                        continue;
-                    } else {
-                        nextStair--;
-                        currentCell.content = Cell.availableContents.get("elevatorDown");
-                    }
-                    break;
-                case "up":
-                    if (currentCell.stair === stair - 1 || isStartCell) {
-                        // NOTE: If the random choice is up and there is no up stair, just pickup a random choice again.
-                        i--;
-                        continue;
-                    } else {
-                        nextStair++;
-                        currentCell.content = Cell.availableContents.get("elevatorUp");
-                    }
-                    break;
-                case "left":
-                    if (currentCell.col === 0) {
-                        // NOTE: If the random choice is left and the cell are at the border left of the maze, just pickup a random choice again.
-                        i--;
-                        continue;
-                    } else {
-                        nextCol--;
-                        if (!isStartCell) {
-                            currentCell.content = Cell.availableContents.get("empty");
-                        }
-                        currentCell.walls.left = false;
-                    }
-                    break;
-                case "right":
-                    if (currentCell.col === col - 1) {
-                        // NOTE: If the random choice is right and the cell are at the border right of the maze, just pickup a random choice again.
-                        i--;
-                        continue;
-                    } else {
-                        nextCol++;
-                        if (!isStartCell) {
-                            currentCell.content = Cell.availableContents.get("empty");
-                        }
-                        currentCell.walls.right = false;
-                    }
-                    break;
-                case "forward":
-                    if (currentCell.row === 0) {
-                        // NOTE: If the random choice is forward and the cell are at the border top of the maze, just pickup a random choice again.
-                        i--;
-                        continue;
-                    } else {
-                        nextRow--;
-                        if (!isStartCell) {
-                            currentCell.content = Cell.availableContents.get("empty");
-                        }
-                        currentCell.walls.forward = false;
-                    }
-                    break;
-                case "backward":
-                    if (currentCell.row === row - 1) {
-                        // NOTE: If the random choice is backward and the cell are at the border bottom of the maze, just pickup a random choice again.
-                        i--;
-                        continue;
-                    } else {
-                        nextRow++;
-                        if (!isStartCell) {
-                            currentCell.content = Cell.availableContents.get("empty");
-                        }
-                        currentCell.walls.backward = false;
-                    }
-                    break;
+            // NOTE: Check that the next position is valid and don't replace by an elevator if the current cell is the starting cell (in this case just take a random choice again)
+            // TODO: Ask to Roi if the first of below conditions is OK or should be replace by something else more readble.
+            if (((nextCellDirectionName !== "up" && nextCellDirectionName !== "down") || isCurrentCellStartCell === false) &&
+                nextStair >= 0 && nextStair < stair &&
+                nextRow >= 0 && nextRow < row &&
+                nextCol >= 0 && nextCol < col) {
+
+                // NOTE: Don't override start cell content in any case
+                if (isCurrentCellStartCell === false) {
+                    currentCell.content = Cell.getCellContentFromDirectionName(nextCellDirectionName); // NOTE: Don't forget to update the content of the current cell (add an elevator for example).
+                }
+
+                // NOTE: Remove the wall between the current cell and the next cell if any
+                currentCell.walls[nextCellDirectionName] = false;
+
+                // NOTE: Finally assign the nextCell to go
+                let nextCell = cells[nextStair][nextRow][nextCol];
+                // NOTE: Remove the wall of the next cell to the opposite direction of the current cell
+                nextCell.walls[Cell.oppositeDirections.get(nextCellDirectionName)] = false;
+
+                // NOTE: Set the next cell as the current cell for the next iteration
+                currentCell = nextCell;
+            } else {
+                // NOTE: If the random choice is down and there is no down stair, 
+                //       or if the random choice is up and there is no up stair,
+                //       or if the random choice is left and the cell are at the border left of the maze,
+                //       or if the random choice is right and the cell are at the border right of the maze, 
+                //       or if the random choice is forward and the cell are at the border top of the maze,
+                //       or if the random choice is backward and the cell are at the border bottom of the maze, 
+                //       then just pickup a random choice again.
+                i--;
+                continue;
             }
-
-            let nextCell = cells[nextStair][nextRow][nextCol];
-
-            // NOTE: Remove the wall of the next cell to the opposite direction of the current cell
-            let oppositeDirections = {
-                "left": "right",
-                "right": "left",
-                "forward": "backward",
-                "backward": "forward",
-                "up": "down",
-                "down": "up"
-            };
-            nextCell.walls[oppositeDirections[nextCellDirectionName]] = false;
-
-            // NOTE: Set the next cell as the current cell for the next iteration
-            currentCell = nextCell;
         }
 
         return new Maze3d(cells, startCell, currentCell); // NOTE: The last current cell is the goal cell.

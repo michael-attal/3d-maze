@@ -24,7 +24,7 @@ class AdapterMaze3dToSearchable {
                 return cell === this.maze3d.goalCell;
             },
             actions: (currentCellToCheckNeighbours) => {
-                /** @type Cell */
+                /** @type {Cell} */
                 let currentCell = currentCellToCheckNeighbours;
                 let neighbourCells = [];
                 let cells = this.maze3d.cells
