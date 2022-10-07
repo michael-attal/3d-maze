@@ -1,16 +1,35 @@
-class DirectionHelp {
+class DirectionHelper {
     stair
     row
     col
+    direction
+    oppositeDirection
 
-    constructor(stair, row, col) {
+    static oppositeDirections = new Map([
+        ["left", "right"],
+        ["right", "left"],
+        ["forward", "backward"],
+        ["backward", "forward"],
+        ["up", "down"],
+        ["down", "up"],
+    ]);
+
+
+    constructor(stair, row, col, direction) {
         this.stair = stair;
         this.row = row;
         this.col = col
+        this.direction = direction;
+        this.oppositeDirection = DirectionHelper.oppositeDirections.get(direction);
     }
 
     get arrFormat() {
         return [this.stair, this.row, this.col];
+    }
+
+    /** Alias of direction property */
+    get name() {
+        return this.direction;
     }
 }
 
@@ -27,26 +46,18 @@ class Cell {
         ["elevatorUpAndDown", "↕"],
     ]);
 
-    /** @type {Map<String, Array<DirectionHelp>} */
-    static availableDirections = new Map([
-        ["left", new DirectionHelp(0, 0, -1)],
-        ["right", new DirectionHelp(0, 0, 1)],
-        ["forward", new DirectionHelp(0, -1, 0)],
-        ["backward", new DirectionHelp(0, 1, 0)],
-        ["down", new DirectionHelp(-1, 0, 0)],
-        ["up", new DirectionHelp(1, 0, 0)],
-    ]);
+    /** @type {Array<DirectionHelper>} */
+    static availableDirections = [
+        new DirectionHelper(0, 0, -1, "left"),
+        new DirectionHelper(0, 0, 1, "right"),
+        new DirectionHelper(0, -1, 0, "forward"),
+        new DirectionHelper(0, 1, 0, "backward"),
+        new DirectionHelper(-1, 0, 0, "down"),
+        new DirectionHelper(1, 0, 0, "up"),
+    ];
 
-    static oppositeDirections = new Map([
-        ["left", "right"],
-        ["right", "left"],
-        ["forward", "backward"],
-        ["backward", "forward"],
-        ["up", "down"],
-        ["down", "up"],
-    ]);
-
-    static contentFromDirectionName = new Map([
+    /** @type {Map<String, String} */
+    static contentNameFromDirectionName = new Map([
         ["left", "empty"],
         ["right", "empty"],
         ["forward", "empty"],
@@ -55,13 +66,13 @@ class Cell {
         ["down", "elevatorDown"],
     ]);
 
-    static getDirectionNameFromIndex(index) {
-        let key = Array.from(Cell.availableDirections.keys())[index];
-        return key;
-    }
-
+    /**
+     * 
+     * @param {String} name of the direction (e.g. left)
+     * @returns {String} the content of the direction (e.g. elevatorUp for the up direction)
+     */
     static getCellContentFromDirectionName(name) {
-        return Cell.availableContents.get(Cell.contentFromDirectionName.get(name));
+        return Cell.availableContents.get(Cell.contentNameFromDirectionName.get(name));
     }
 
     #walls
@@ -135,9 +146,9 @@ class Maze3d {
     /** @type {Array<Array<Array<Cell>>>} */
     #cells
     /** @type {Cell} */
-    #startCell // NOTE: The start cell of the maze - Currently not used in Maze3d class but can be used in the future
+    #startCell // NOTE: The start cell of the maze
     /** @type {Cell} */
-    #goalCell // NOTE: The exit cell of the maze is the goalCell - Currently not used in Maze3d class but can be used in the future
+    #goalCell // NOTE: The exit cell of the maze is the goalCell
 
     constructor(cells, startCell, goalCell) {
         // NOTE: z,y,x array of cell objects where z represent the stair, y the row and x the column. Example : cells[1][2][3] contain the cell at z=1, y=2, x=3 position in the maze
@@ -178,23 +189,63 @@ class Maze3d {
         this.#goalCell = cell;
     }
 
+    get stairs() {
+        return this.cells.length;
 
+    }
 
+    get rows() {
+        return this.cells[0].length;
+
+    }
+
+    get cols() {
+        return this.cells[0][0].length;
+    }
+
+    get numberOfCells() {
+        return this.stairs * this.rows * this.cols;
+    }
+
+    /**
+     * 
+     * @param {DirectionHelper} position 
+     * @returns {bool} true if the given position is valid inside this maze.
+     */
+    isValidPosition(position) {
+        // NOTE: A valid position is when one of these conditions is meet:
+        //       the cell is going down and there is no down stair,
+        //       or if the cell is going up and there is no up stair,
+        //       or if the cell is going left and the cell is at the border left of the maze,
+        //       or if the cell is going right and the cell is at the border right of the maze,
+        //       or if the cell is going forward and the cell is at the border top of the maze,
+        //       or if the cell is going backward and the cell is at the border bottom of the maze,
+        if (position.stair >= 0 && position.stair < this.stairs &&
+            position.row >= 0 && position.row < this.rows &&
+            position.col >= 0 && position.col < this.cols) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * @returns {String} Return a string representation of the maze
+     *   Example:
+     *   -----------
+     *   |G| |S|↑|↓|
+     *   | +-+ + + |
+     *   | |   | | |
+     *   | +   + +-|
+     *   | |       |
+     *   | +-+-+ + |
+     *   | |   | | |
+     *   | +-+-+ + |
+     *   |       | |
+     *   -----------
+     */
     toString() {
-        // Return a string representation of the maze
-        // Example:
-        // -----------
-        // |G| |S|↑|↓|
-        // | +-+ + + |
-        // | |   | | |
-        // | +   + +-|
-        // | |       |
-        // | +-+-+ + |
-        // | |   | | |
-        // | +-+-+ + |
-        // |       | |
-        // -----------
-
         let mazeStr = "";
         let stair = this.#cells.length;
         let row = this.#cells[0].length;
@@ -260,4 +311,4 @@ class Maze3d {
 }
 
 
-export { DirectionHelp, Cell, Maze3d };
+export { DirectionHelper, Cell, Maze3d };

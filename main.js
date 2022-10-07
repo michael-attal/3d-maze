@@ -7,21 +7,21 @@ import MazeGui from './gui/maze-gui.js';
 let maze;
 
 // FIXME : UNCOMMENT AFTER GUI IS IMPLEMENTED
-let simpleMaze3dGenerator = new SimpleMaze3dGenerator();
-maze = simpleMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with SimpleMaze3dGenerator
-console.log(maze.toString());
+// let simpleMaze3dGenerator = new SimpleMaze3dGenerator();
+// maze = simpleMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with SimpleMaze3dGenerator
+// console.log(maze.toString());
 
-let dfsMaze3dGenerator = new DfsMaze3dGenerator();
-maze = dfsMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with DfsMaze3dGenerator
-console.log(maze.toString());
+// let dfsMaze3dGenerator = new DfsMaze3dGenerator();
+// maze = dfsMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with DfsMaze3dGenerator
+// console.log(maze.toString());
 
-let aldousbroderMaze3dGenerator = new AldousbroderMaze3dGenerator();
-maze = aldousbroderMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with AldousbroderMaze3dGenerator
-console.log(maze.toString());
+// let aldousbroderMaze3dGenerator = new AldousbroderMaze3dGenerator();
+// maze = aldousbroderMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with AldousbroderMaze3dGenerator
+// console.log(maze.toString());
 
-console.log("Search demo :");
-let searchDemo = new SearchDemo();
-searchDemo.run();
+// console.log("Search demo :");
+// let searchDemo = new SearchDemo();
+// searchDemo.run();
 // FIXME : UNCOMMENT AFTER GUI IS IMPLEMENTED
 
 // SECTION: REPRENDRE ICI - A DECOMMENTER

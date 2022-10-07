@@ -1,4 +1,4 @@
-import { Cell, Maze3d } from "../maze3d.js";
+import { Cell, DirectionHelper, Maze3d } from "../maze3d.js";
 import { Searchable } from './searchable.js';
 import AStar from "./a-star.js";
 
@@ -27,28 +27,17 @@ class AdapterMaze3dToSearchable {
                 /** @type {Cell} */
                 let currentCell = currentCellToCheckNeighbours;
                 let neighbourCells = [];
-                let cells = this.maze3d.cells
-                let stairs = cells.length;
-                let rows = cells[0].length;
-                let cols = cells[0][0].length;
+                let cells = this.maze3d.cells;
 
-                if (currentCell.stair + 1 < stairs && currentCell.walls.up === false) {
-                    neighbourCells.push(cells[currentCell.stair + 1][currentCell.row][currentCell.col]);
-                }
-                if (currentCell.stair - 1 >= 0 && currentCell.walls.down === false) {
-                    neighbourCells.push(cells[currentCell.stair - 1][currentCell.row][currentCell.col]);
-                }
-                if (currentCell.row + 1 < rows && currentCell.walls.backward === false) {
-                    neighbourCells.push(cells[currentCell.stair][currentCell.row + 1][currentCell.col]);
-                }
-                if (currentCell.row - 1 >= 0 && currentCell.walls.forward === false) {
-                    neighbourCells.push(cells[currentCell.stair][currentCell.row - 1][currentCell.col]);
-                }
-                if (currentCell.col + 1 < cols && currentCell.walls.right === false) {
-                    neighbourCells.push(cells[currentCell.stair][currentCell.row][currentCell.col + 1]);
-                }
-                if (currentCell.col - 1 >= 0 && currentCell.walls.left === false) {
-                    neighbourCells.push(cells[currentCell.stair][currentCell.row][currentCell.col - 1]);
+                // NOTE: Check that each direction is a valid direction (that mean there is no wall between the current cell and neighbour cell and that the direction don't go over the maze limit)
+                for (let direction of Cell.availableDirections) {
+                    let tryPosition = new DirectionHelper(direction.stair + currentCell.stair, direction.row + currentCell.row, direction.col + currentCell.col, direction.name);
+                    if (this.maze3d.isValidPosition(tryPosition)) {
+                        let neighbourCell = cells[tryPosition.stair][tryPosition.row][tryPosition.col];
+                        if (currentCell.walls[tryPosition.name] === false) {
+                            neighbourCells.push(neighbourCell);
+                        }
+                    }
                 }
 
                 return neighbourCells;

@@ -8,52 +8,39 @@ class AldousbroderMaze3dGenerator extends Maze3DGenerator {
     }
 
     // NOTE: This method came from Aldours Broder algorithm, see: https://en.wikipedia.org/wiki/Maze_generation_algorithm#Aldous-Broder_algorithm
-    generate(stair, row, col) {
+    generate(stairs, rows, cols) {
         // NOTE: Create the cells
-        let cells = this.createCells(stair, row, col);
+        let cells = this.createCells(stairs, rows, cols);
 
         // NOTE: Create a random start cell position
-        let startPosition = this.getRandomCellPosition(stair, row, col);
+        let startPosition = this.getRandomCellPosition(stairs, rows, cols);
         let startCell = cells[startPosition.stair][startPosition.row][startPosition.col];
         startCell.content = Cell.availableContents.get("startPosition");
         let currentCell = startCell;
 
+        // NOTE Initialize the maze
+        let maze = new Maze3d(cells, startCell);
+
         let visited = [];
         visited.push(currentCell);
 
-        while (visited.length < stair * row * col) {
-            let randomNeighbourPosition = this.getRandomNeighbourPosition(currentCell, startCell, stair, row, col);
-            let randomNeighbourCell = cells[randomNeighbourPosition.stair][randomNeighbourPosition.row][randomNeighbourPosition.col];
+        while (visited.length < maze.numberOfCells) {
+            let isCurrentCellStartCell = currentCell === startCell;
+            // NOTE: Get the next random neighbour cell with direction
+            let directionAndRandomCell = this.getRandomCellNeighbour(currentCell, maze, true, true);
+            /** @type {DirectionHelper} */
+            let randomNeighbourCellDirection = directionAndRandomCell[0];
+            /** @type {Cell} */
+            let randomNeighbourCell = directionAndRandomCell[1];
+
             if (visited.indexOf(randomNeighbourCell) === -1) {
                 // NOTE: Remove the wall between the current cell and the chosen neighbour.
-                if (currentCell.stair === randomNeighbourCell.stair) {
-                    if (currentCell.row === randomNeighbourCell.row) {
-                        if (currentCell.col < randomNeighbourCell.col) {
-                            currentCell.walls.right = false;
-                            randomNeighbourCell.walls.left = false;
-                        } else {
-                            currentCell.walls.left = false;
-                            randomNeighbourCell.walls.right = false;
-                        }
-                    } else {
-                        if (currentCell.row < randomNeighbourCell.row) {
-                            currentCell.walls.backward = false;
-                            randomNeighbourCell.walls.forward = false;
-                        } else {
-                            currentCell.walls.forward = false;
-                            randomNeighbourCell.walls.backward = false;
-                        }
-                    }
-                } else {
-                    if (currentCell.stair < randomNeighbourCell.stair) {
-                        currentCell.walls.up = false;
-                        randomNeighbourCell.walls.down = false;
-                        currentCell.content = Cell.availableContents.get("elevatorUp");
-                    } else {
-                        currentCell.walls.down = false;
-                        randomNeighbourCell.walls.up = false;
-                        currentCell.content = Cell.availableContents.get("elevatorDown");
-                    }
+                currentCell.walls[randomNeighbourCellDirection.name] = false;
+                randomNeighbourCell.walls[randomNeighbourCellDirection.oppositeDirection] = false;
+
+                if (!isCurrentCellStartCell) {
+                    currentCell.content = Cell.getCellContentFromDirectionName(randomNeighbourCellDirection.name); // NOTE: Don't forget to update the content of the current cell (add an elevator for example).
+                    // NOTE: Create upAndDown randomly : Copy and past the code from DfsMaze3dGenerator class at line 49.
                 }
 
                 // NOTE: Mark the chosen neighbour as visited.
@@ -71,95 +58,10 @@ class AldousbroderMaze3dGenerator extends Maze3DGenerator {
         // NOTE: Select the last visited cell
         let goalCell = visited[visited.length - 1];
         goalCell.content = Cell.availableContents.get("goal");
+        maze.goalCell = goalCell;
 
-        return new Maze3d(cells, startCell, goalCell);
+        return maze;
     }
-
-    getRandomNeighbourPosition(cell, startCell, stair, row, col) {
-        let randomNeighbourPosition = {};
-        let isValidPosition = false;
-        while (isValidPosition === false) {
-            isValidPosition = true;
-            let randomLRFBUDPosition = Math.floor(Math.random() * 6);
-            switch (randomLRFBUDPosition) {
-                case 0:
-                    // NOTE: In the start cell we can't go up or down as it will replace the "S" to "↑" or "↓" and we want to keep the "S" as the start cell.
-                    if (cell !== startCell && cell.stair + 1 < stair) {
-                        randomNeighbourPosition = {
-                            stair: cell.stair + 1,
-                            row: cell.row,
-                            col: cell.col
-                        };
-                    } else {
-                        isValidPosition = false;
-                    }
-                    break;
-                case 1:
-                    if (cell !== startCell && cell.stair - 1 >= 0) {
-                        randomNeighbourPosition = {
-                            stair: cell.stair - 1,
-                            row: cell.row,
-                            col: cell.col
-                        };
-                    }
-                    else {
-                        isValidPosition = false;
-                    }
-                    break;
-                case 2:
-                    if (cell.row + 1 < row) {
-                        randomNeighbourPosition = {
-                            stair: cell.stair,
-                            row: cell.row + 1,
-                            col: cell.col
-                        };
-                    }
-                    else {
-                        isValidPosition = false;
-                    }
-                    break;
-                case 3:
-                    if (cell.row - 1 >= 0) {
-                        randomNeighbourPosition = {
-                            stair: cell.stair,
-                            row: cell.row - 1,
-                            col: cell.col
-                        };
-                    }
-                    else {
-                        isValidPosition = false;
-                    }
-                    break;
-                case 4:
-                    if (cell.col + 1 < col) {
-                        randomNeighbourPosition = {
-                            stair: cell.stair,
-                            row: cell.row,
-                            col: cell.col + 1
-                        };
-                    }
-                    else {
-                        isValidPosition = false;
-                    }
-                    break;
-                case 5:
-                    if (cell.col - 1 >= 0) {
-                        randomNeighbourPosition = {
-                            stair: cell.stair,
-                            row: cell.row,
-                            col: cell.col - 1
-                        };
-                    }
-                    else {
-                        isValidPosition = false;
-                    }
-                    break;
-            }
-        }
-        return randomNeighbourPosition;
-    }
-
-
 }
 
 export default AldousbroderMaze3dGenerator;
