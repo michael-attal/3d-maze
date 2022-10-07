@@ -161,6 +161,19 @@ class Maze3d {
         return this.#cells;
     }
 
+    /** @type {Array<Cell>} */
+    get allCells() {
+        let allCells = [];
+        for (let z = 0; z < this.stairs; z++) {
+            for (let y = 0; y < this.rows; y++) {
+                for (let x = 0; x < this.cols; x++) {
+                    allCells.push(this.#cells[z][y][x])
+                }
+            }
+        }
+        return allCells;
+    }
+
     get startCell() {
         return this.#startCell;
     }

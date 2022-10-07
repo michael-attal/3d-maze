@@ -25,21 +25,22 @@ let maze;
 // FIXME : UNCOMMENT AFTER GUI IS IMPLEMENTED
 
 // SECTION: REPRENDRE ICI - A DECOMMENTER
-// let dfsMaze3dGenerator = new DfsMaze3dGenerator();
-// maze = dfsMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with DfsMaze3dGenerator
-// const mazeGuiSettings = {
-//     maze: maze,
-//     showMultidimensionalMaze: true,
-//     playerImage: "https://4.imimg.com/data4/CX/KB/FUSIONI-27713698/prod-image-500x500.jpg",
-//     wallImage: "https://4.imimg.com/data4/CX/KB/FUSIONI-27713698/prod-image-500x500.jpg",
-//     freeCaseImage: "https://4.imimg.com/data4/CX/KB/FUSIONI-27713698/prod-image-500x500.jpg",
-//     elevatorUpImage: "https://4.imimg.com/data4/CX/KB/FUSIONI-27713698/prod-image-500x500.jpg",
-//     elevatorDownImage: "https://4.imimg.com/data4/CX/KB/FUSIONI-27713698/prod-image-500x500.jpg",
-//     elevatorUpAndDownImage: "https://4.imimg.com/data4/CX/KB/FUSIONI-27713698/prod-image-500x500.jpg",
-//     goalImage: "https://4.imimg.com/data4/CX/KB/FUSIONI-27713698/prod-image-500x500.jpg",
-// }
-// let mazeGui = new MazeGui(...Object.values(mazeGuiSettings));
-// mazeGui.print();
+let dfsMaze3dGenerator = new DfsMaze3dGenerator();
+maze = dfsMaze3dGenerator.generate(3, 5, 5); // NOTE: 3 stairs, 5 rows, 5 cols with DfsMaze3dGenerator
+const mazeGuiSettings = {
+    maze: maze,
+    showMultidimensionalMaze: true,
+    playerImage: "./assets/images/hercule.webp",
+    wallImage: "./assets/images/wall.jpg",
+    freeCaseImage: "./assets/images/white_background.png",
+    elevatorUpImage: "./assets/images/elevator_up.png",
+    elevatorDownImage: "./assets/images/elevator_down.png",
+    elevatorUpAndDownImage: "./assets/images/elevator_up_and_down.jpg",
+    goalImage: "./assets/images/exit.png",
+    elemWhereToInsertTheGui: document.getElementById("maze-gui"),
+}
+let mazeGui = new MazeGui(...Object.values(mazeGuiSettings));
+mazeGui.print();
 // !SECTION: FIN REPRENDRE ICI - A DECOMMENTER
 
 
