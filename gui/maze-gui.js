@@ -5,7 +5,7 @@ import { Cell, Maze3d } from "../maze3d.js";
 class MazeGui {
     /** @type {Maze3d} */
     maze
-    showMultidimensionalMaze
+    mazeGenerator
     playerImage
     playerName
     wallImage
@@ -23,9 +23,9 @@ class MazeGui {
     menuHtmlElements;
 
 
-    constructor(showMultidimensionalMaze = true, playerImage, wallImage, freeCaseImage, elevatorUpImage, elevatorDownImage, elevatorUpAndDownImage, goalImage, elemWhereToInsertTheGui) {
+    constructor(mazeGenerator, playerImage, wallImage, freeCaseImage, elevatorUpImage, elevatorDownImage, elevatorUpAndDownImage, goalImage, elemWhereToInsertTheGui) {
         this.handleActions = new HandleActions(this);
-        this.showMultidimensionalMaze = showMultidimensionalMaze;
+        this.mazeGenerator = mazeGenerator;
         this.playerImage = playerImage;
         this.wallImage = wallImage;
         this.freeCaseImage = freeCaseImage;
@@ -47,8 +47,7 @@ class MazeGui {
 
 
     generateMaze(stairs, rows, cols) {
-        let dfsMaze3dGenerator = new DfsMaze3dGenerator();
-        this.maze = dfsMaze3dGenerator.generate(stairs, rows, cols);
+        this.maze = this.mazeGenerator.generate(stairs, rows, cols);
     }
 
     print() {
@@ -195,7 +194,13 @@ class MazeGui {
             ]);
             let entries = Object.entries(cell.walls)
 
+            let fullWallsCell = true;
             entries.map(([key, val] = entry) => {
+                // NOTE: Used to show a block of background black
+                if (val === false) {
+                    fullWallsCell = false;
+                }
+
                 if (key != "up" && key != "down") {
                     if (val === true) {
                         // TODO: Change by adding a class, like .border-top-cell ...
@@ -205,6 +210,9 @@ class MazeGui {
                     }
                 }
             });
+            if (fullWallsCell) {
+                cellDiv.style.backgroundColor = "black";
+            }
 
             if (this.maze.playerCell === cell) {
                 cellDiv.style.backgroundImage = `url(${this.playerImage}), url(${this.cellContentsToImages.get(cell.content)})`;

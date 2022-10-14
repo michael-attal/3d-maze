@@ -30,7 +30,6 @@ class HandleActions {
                 let direction = Cell.availableDirections.find(direct => direct.name === HandleActions.arrowKeyToDirectionName.get(e.key));
                 let tryPosition = new DirectionHelper(direction.stair + this.#gui.maze.playerCell.stair, direction.row + this.#gui.maze.playerCell.row, direction.col + this.#gui.maze.playerCell.col, direction.name);
 
-                console.log(tryPosition);
                 if (this.#gui.maze.isValidPosition(tryPosition)) {
                     let newPlayerCell = this.#gui.maze.cells[tryPosition.stair][tryPosition.row][tryPosition.col];
                     if (this.#gui.maze.playerCell.walls[tryPosition.name] === false) {

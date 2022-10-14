@@ -235,10 +235,6 @@ class Maze3d {
         const stairCount = cell.stair * (this.rows * this.cols);
         const rowCount = cell.row * this.cols;
         const colCount = cell.col;
-        console.log(stairCount);
-        console.log(rowCount);
-        console.log(colCount);
-        console.log(stairCount + rowCount + colCount);
         return stairCount + rowCount + colCount;
     }
 

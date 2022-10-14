@@ -28,7 +28,7 @@ import MazeGui from './gui/maze-gui.js';
 
 // SECTION: Gui section
 const mazeGuiSettings = {
-    showMultidimensionalMaze: true,
+    mazeGenerator: new AldousbroderMaze3dGenerator(), // NOTE: Or DfsMaze3dGenerator
     playerImage: "./assets/images/hercule.webp",
     wallImage: "./assets/images/wall.jpg",
     freeCaseImage: "./assets/images/transparent_background.png",
