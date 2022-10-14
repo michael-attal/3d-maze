@@ -3,6 +3,10 @@ import DfsMaze3dGenerator from './generators/dfs-maze3d-generator.js';
 import AldousbroderMaze3dGenerator from './generators/aldousbroder-maze3d-generator.js';
 import SearchDemo from './search-algorithms/search-demo.js';
 import MazeGui from './gui/maze-gui.js';
+import BreadthFirstSearch from './search-algorithms/breadth-first-search.js';
+import AStar from './search-algorithms/a-star.js';
+import DepthFirstSearch from './search-algorithms/depth-first-search.js';
+import AdapterMaze3dToSearchable from './search-algorithms/adapter-maze3d-to-searchable.js';
 
 
 // SECTION: Uncomment to see results
@@ -29,6 +33,8 @@ import MazeGui from './gui/maze-gui.js';
 // SECTION: Gui section
 const mazeGuiSettings = {
     mazeGenerator: new AldousbroderMaze3dGenerator(), // NOTE: Or DfsMaze3dGenerator
+    searchAlgorithms: [new BreadthFirstSearch(), new DepthFirstSearch(), new AStar()],
+    adapterToSearchAlgorithms: new AdapterMaze3dToSearchable(),
     playerImage: "./assets/images/hercule.webp",
     wallImage: "./assets/images/wall.jpg",
     freeCaseImage: "./assets/images/transparent_background.png",

@@ -6,6 +6,8 @@ class MazeGui {
     /** @type {Maze3d} */
     maze
     mazeGenerator
+    searchAlgorithms
+    adapterToSearchAlgorithms
     playerImage
     playerName
     wallImage
@@ -23,9 +25,11 @@ class MazeGui {
     menuHtmlElements;
 
 
-    constructor(mazeGenerator, playerImage, wallImage, freeCaseImage, elevatorUpImage, elevatorDownImage, elevatorUpAndDownImage, goalImage, elemWhereToInsertTheGui) {
+    constructor(mazeGenerator, searchAlgorithms, adapterToSearchAlgorithms, playerImage, wallImage, freeCaseImage, elevatorUpImage, elevatorDownImage, elevatorUpAndDownImage, goalImage, elemWhereToInsertTheGui) {
         this.handleActions = new HandleActions(this);
         this.mazeGenerator = mazeGenerator;
+        this.searchAlgorithms = searchAlgorithms;
+        this.adapterToSearchAlgorithms = adapterToSearchAlgorithms;
         this.playerImage = playerImage;
         this.wallImage = wallImage;
         this.freeCaseImage = freeCaseImage;
@@ -81,6 +85,9 @@ class MazeGui {
 
         const searchAlgoLabel = document.createElement("label");
         const searchAlgoSelect = document.createElement("select");
+        for (const searchAlgo of this.searchAlgorithms) {
+            searchAlgoSelect.options.add(new Option(searchAlgo.constructor.name, searchAlgo.constructor.name));
+        }
         searchAlgoSelect.id = "search-algo";
         searchAlgoLabel.hidden = true; // NOTE: Hide until a maze is generated.
         searchAlgoSelect.hidden = true;
@@ -219,25 +226,49 @@ class MazeGui {
             } else {
                 cellDiv.style.backgroundImage = `url(${this.cellContentsToImages.get(cell.content)})`;
             }
+
+            cellDiv.setAttribute('stair', cell.stair);
+            cellDiv.setAttribute('row', cell.row);
+            cellDiv.setAttribute('col', cell.col);
+
             cells.push(cellDiv);
         }
 
+        let stairDivs = [];
+        let stairIdx = -1;
+        let stairWidth = cellWidth * (this.maze.cols + 2);
         for (let i = 0; i < cells.length; i++) {
+            const currentStair = Number(cells[i].getAttribute('stair'));
             // NOTE: Separete each stair for a better visibility
             if (i % (this.maze.rows * this.maze.cols) === 0) {
-                let sepStair = document.createElement("div");
-                sepStair.className = "separator-stair";
-                mazeSection.appendChild(sepStair);
+                stairIdx++;
+                stairDivs.push(document.createElement("div"));
+                stairDivs[stairIdx].className = "maze-stair";
+
+                if (this.maze.playerCell.stair === currentStair) {
+                    stairDivs[stairIdx].id = "current-player-stair";
+                }
+
+                stairDivs[stairIdx].style.width = stairWidth + "px";
             } else if (i % this.maze.cols === 0) {
                 // NOTE: Break the inline-block rows here.
                 let sepRow = document.createElement("div");
                 sepRow.className = "separator-row";
-                mazeSection.appendChild(sepRow);
+                stairDivs[stairIdx].appendChild(sepRow);
             }
-            mazeSection.appendChild(cells[i]);
+            stairDivs[stairIdx].appendChild(cells[i]);
+        }
+        for (let i = 0; i < stairDivs.length; i++) {
+            let sepStair = document.createElement("div");
+            sepStair.className = "separator-stair";
+            // NOTE: Add separator except for the first stair
+            if (i != 0) {
+                mazeSection.appendChild(sepStair);
+            }
+            mazeSection.appendChild(stairDivs[i]);
         }
 
-        mazeSection.style.minWidth = cellWidth * (this.maze.cols + 1) + "px";
+        mazeSection.style.minWidth = stairWidth + "px";
         this.elemWhereToInsertTheGui.appendChild(mazeSection);
     }
 
@@ -257,6 +288,19 @@ class MazeGui {
 
         oldPlayerCellDiv.style.backgroundImage = `url(${this.cellContentsToImages.get(oldPlayerCell.content)})`;
         newPlayerCellDiv.style.backgroundImage = `url(${this.playerImage}), url(${this.cellContentsToImages.get(newPlayerCell.content)})`;
+
+        // NOTE: Also update the current stair (to add the transform effect)
+        if (oldPlayerCell.stair != newPlayerCell.stair) {
+            const oldPlayerStairDiv = document.getElementById("current-player-stair");
+            oldPlayerStairDiv.id = "";
+            const newPlayerStairDiv = document.getElementsByClassName("maze-stair")[newPlayerCell.stair];
+            newPlayerStairDiv.id = "current-player-stair";
+            newPlayerCellDiv.scrollIntoView({
+                behavior: 'auto',
+                block: 'center',
+                inline: 'center'
+            });
+        }
     }
 
     printSolution() {

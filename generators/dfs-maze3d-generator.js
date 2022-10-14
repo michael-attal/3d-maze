@@ -28,8 +28,6 @@ class DfsMaze3dGenerator extends Maze3DGenerator {
         let currentCell = startCell;
 
         while (stack.length > 0) {
-            let isCurrentCellStartCell = currentCell === startCell;
-
             // NOTE: Get the next random cell with direction
             let directionAndRandomCell = this.getRandomCellNeighbour(currentCell, maze, true, true);
             /** @type {DirectionHelper} */

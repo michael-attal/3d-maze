@@ -46,17 +46,24 @@ class HandleActions {
             this.#gui.playerName = this.#gui.menuHtmlElements.nameInput.value;
             this.#gui.generateMaze(this.#gui.menuHtmlElements.stairsInput.value, this.#gui.menuHtmlElements.rowsInput.value, this.#gui.menuHtmlElements.colsInput.value);
             this.#gui.printMaze();
+            const playerStairDiv = document.getElementById("current-player-stair");
+            playerStairDiv.scrollIntoView({
+                behavior: 'auto',
+                block: 'center',
+                inline: 'center'
+            });
             this.#gui.menuHtmlElements.searchAlgoLabel.hidden = false; // NOTE: Allow user to solve his game.
             this.#gui.menuHtmlElements.searchAlgoSelect.hidden = false;
             this.#gui.menuHtmlElements.solveGameBtn.hidden = false;
             this.#gui.menuHtmlElements.saveGameBtn.hidden = false; // NOTE: Allow user to save his game.
             this.#gui.menuHtmlElements.loadGameBtn.hidden = true; // NOTE: Hide load a previous game if user has started a game.
         });
-
     }
 
     addListenerToSolveGame() {
-
+        this.#gui.menuHtmlElements.solveGameBtn.addEventListener("click", e => {
+            // TODO: Appeler dans le gui le solve, qui fait appelle pour chaque cell dans solutions la fonction printMovePlayerToNewCell, tout les 0,5 secondes.
+        });
     }
 
     movePlayerTo(newPlayerCell) {

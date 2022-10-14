@@ -25,7 +25,6 @@ class AldousbroderMaze3dGenerator extends Maze3DGenerator {
         visited.push(currentCell);
 
         while (visited.length < maze.numberOfCells) {
-            let isCurrentCellStartCell = currentCell === startCell;
             // NOTE: Get the next random neighbour cell with direction
             let directionAndRandomCell = this.getRandomCellNeighbour(currentCell, maze, true, true);
             /** @type {DirectionHelper} */
