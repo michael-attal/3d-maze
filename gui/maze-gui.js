@@ -236,7 +236,6 @@ class MazeGui {
 
         let stairDivs = [];
         let stairIdx = -1;
-        let stairWidth = cellWidth * (this.maze.cols + 2);
         for (let i = 0; i < cells.length; i++) {
             const currentStair = Number(cells[i].getAttribute('stair'));
             // NOTE: Separete each stair for a better visibility
@@ -249,7 +248,6 @@ class MazeGui {
                     stairDivs[stairIdx].id = "current-player-stair";
                 }
 
-                stairDivs[stairIdx].style.width = stairWidth + "px";
             } else if (i % this.maze.cols === 0) {
                 // NOTE: Break the inline-block rows here.
                 let sepRow = document.createElement("div");
@@ -268,7 +266,6 @@ class MazeGui {
             mazeSection.appendChild(stairDivs[i]);
         }
 
-        mazeSection.style.minWidth = stairWidth + "px";
         this.elemWhereToInsertTheGui.appendChild(mazeSection);
     }
 

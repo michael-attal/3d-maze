@@ -56,6 +56,7 @@ body {
 
 
 .maze-stair {
+    width: fit-content;
     transition: all 0.5s;
     transform: perspective(75em) rotateX(60deg);
     box-shadow: rgba(20, 29, 37, 0.45) 0px 50px 120px -25px,
