@@ -39,20 +39,10 @@ class DfsMaze3dGenerator extends Maze3DGenerator {
 
             if (visited.indexOf(nextCell) === -1) {
                 // NOTE: Remove the wall between the current cell and the chosen neighbour.
-                currentCell.walls[nextCellDirection.name] = false;
-                nextCell.walls[nextCellDirection.oppositeDirection] = false;
+                this.updateWallsForCurrentAndNextCells(currentCell, nextCell, nextCellDirection);
 
-                if (!isCurrentCellStartCell) {
-                    currentCell.content = Cell.getCellContentFromDirectionName(nextCellDirection.name); // NOTE: Don't forget to update the content of the current cell (add an elevator for example).
-                    // NOTE: Create upAndDown randomly - Uncomment if we want to create elevatorUpAndDown randomly
-                    // if (currentCell.content === Cell.availableContents.get("elevatorUp") || currentCell.content === Cell.availableContents.get("elevatorDown")) {
-                    //     if (Math.random() >= 0.5) {
-                    //         if ((currentCell.stair > 0 && currentCell.stair < stairs - 1)) {
-                    //             currentCell.content = Cell.availableContents.get("elevatorUpAndDown");
-                    //         }
-                    //     }
-                    // }
-                }
+                // NOTE: Update the content of the current and next cells (add elevators for example).
+                this.updateContentForCurrentAndNextCells(currentCell, nextCell, nextCellDirection);
 
                 visited.push(nextCell);
                 stack.push(nextCell);
@@ -61,6 +51,7 @@ class DfsMaze3dGenerator extends Maze3DGenerator {
                 currentCell = stack.pop();
             }
         }
+
         // NOTE: Select the last visited cell to make it harder.
         // TODO: Allow player to select the difficulty, then we can make it easy by selecting the closest visited cell or medium with the middle one and hard with the last one.
         let goalCell = visited[visited.length - 1];

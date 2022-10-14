@@ -55,29 +55,13 @@ class Maze3dGenerator {
                     // cell.walls["forward"] = Math.random() >= 0.5;
                     // cell.walls["backward"] = Math.random() >= 0.5;
 
-                    // NOTE: Create elevator up, down, upAndDown randomly
-                    if (Math.random() >= 0.9) {
-                        if ((z > 0 && z < stairs - 1)) {
-                            cell.content = Cell.availableContents.get("elevatorUpAndDown");
-                        }
-                    } else if (Math.random() >= 0.8) {
-                        if (Math.random() >= 0.5) {
-                            if (z < stairs - 1) {
-                                cell.content = Cell.availableContents.get("elevatorUp");
-                            }
-                        } else {
-                            if (z > 0) {
-                                cell.content = Cell.availableContents.get("elevatorDown");
-                            }
-                        }
-                    }
 
                     // NOTE: Create the border of the maze with walls. The border is the first and last rows, cols and if cell has no stair up or down
-                    // NOTE: Create the wall down if it's ground floor
+                    // NOTE: Create the wall down in any case if it's ground floor
                     if (z === 0) {
                         cell.walls["down"] = true;
                     }
-                    // NOTE: Create the wall up if it's the last floor
+                    // NOTE: Create the wall up  in any case if it's the last floor
                     if (z === stairs - 1) {
                         cell.walls["up"] = true;
                     }
@@ -103,6 +87,41 @@ class Maze3dGenerator {
         }
 
         return cells;
+    }
+
+    /**
+     * 
+     * @param {Cell} currentCell 
+     * @param {Cell} nextCell 
+     * @param {Cell} startCell 
+     */
+    updateContentForCurrentAndNextCells(currentCell, nextCell, direction) {
+        // NOTE: Add elevator up or down or up and down depending of the content of the current cell.
+        if (currentCell.content === Cell.availableContents.get("elevatorUp") && direction.name === "down") {
+            currentCell.content = Cell.availableContents.get("elevatorUpAndDown");
+        } else if (currentCell === Cell.availableContents.get("elevatorDown") && direction.name === "up") {
+            currentCell.content = Cell.availableContents.get("elevatorUpAndDown");
+        } else if (currentCell.content === Cell.availableContents.get("empty")) {
+            currentCell.content = Cell.getCellContentFromDirectionName(direction.name); // NOTE: Don't overide previous existing content (like start cell or elevator...).
+        }
+
+        // NOTE: Now we need to add the next cell content depending on the opposite direction, for example an elevator down if the previous cell (currentCell in that case) is an elevator up.
+        if (nextCell.content === Cell.availableContents.get("empty")) {
+            nextCell.content = Cell.getCellContentFromDirectionName(direction.oppositeDirection);
+        }
+    }
+
+    /**
+     * 
+     * @param {Cell} currentCell 
+     * @param {Cell} nextCell 
+     * @param {DirectionHelper} direction 
+     */
+    updateWallsForCurrentAndNextCells(currentCell, nextCell, direction) {
+        // NOTE: Remove the wall between the current cell and the next cell if any
+        currentCell.walls[direction.name] = false;
+        // NOTE: Remove the wall of the next cell to the opposite direction of the current cell
+        nextCell.walls[direction.oppositeDirection] = false;
     }
 
     getRandomCellPosition(stairs, rows, cols) {
@@ -148,14 +167,14 @@ class Maze3dGenerator {
             let tryPosition = new DirectionHelper(nextCellDirection.stair + cell.stair, nextCellDirection.row + cell.row, nextCellDirection.col + cell.col, nextCellDirection.name);
 
             // NOTE: Check that this next random position is valid 
-            if (maze.isValidPosition(tryPosition, checkElevator)) {
+            if (maze.isValidPosition(tryPosition)) {
                 // NOTE: If checkElevator is equal to true we need to check that the current cell (which will become an elevator cell) is not already the start cell of the maze (to not override it's content by an elevator).
                 let checkOnlyPosition = true;
                 let checkElevatorSuccess = false;
 
                 if (checkElevator !== false) {
                     checkOnlyPosition = false;
-                    // TODO: Ask to Roi if the first of below conditions is OK or should be replace by something else more readble.
+                    // TODO: Ask to Roi if these below conditions is OK or should be replace by something else more readble.
                     if ((tryPosition.direction !== "up" && tryPosition.direction !== "down") || cell !== maze.startCell) {
                         checkElevatorSuccess = true;
                     }

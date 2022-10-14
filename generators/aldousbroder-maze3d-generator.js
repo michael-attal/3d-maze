@@ -35,13 +35,10 @@ class AldousbroderMaze3dGenerator extends Maze3DGenerator {
 
             if (visited.indexOf(randomNeighbourCell) === -1) {
                 // NOTE: Remove the wall between the current cell and the chosen neighbour.
-                currentCell.walls[randomNeighbourCellDirection.name] = false;
-                randomNeighbourCell.walls[randomNeighbourCellDirection.oppositeDirection] = false;
+                this.updateWallsForCurrentAndNextCells(currentCell, randomNeighbourCell, randomNeighbourCellDirection);
 
-                if (!isCurrentCellStartCell) {
-                    currentCell.content = Cell.getCellContentFromDirectionName(randomNeighbourCellDirection.name); // NOTE: Don't forget to update the content of the current cell (add an elevator for example).
-                    // NOTE: Create upAndDown randomly : Copy and past the code from DfsMaze3dGenerator class at line 49.
-                }
+                // NOTE: Update the content of the current and neighbour cells (add elevators for example).
+                this.updateContentForCurrentAndNextCells(currentCell, randomNeighbourCell, randomNeighbourCellDirection);
 
                 // NOTE: Mark the chosen neighbour as visited.
                 visited.push(randomNeighbourCell);

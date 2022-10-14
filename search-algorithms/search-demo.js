@@ -14,21 +14,22 @@ class SearchDemo {
         let depthFirstSearch = new DepthFirstSearch();
         let aStar = new AStar();
         let aldousbroderMaze3dGenerator = new AldousbroderMaze3dGenerator();
-        let maze = aldousbroderMaze3dGenerator.generate(3, 5, 5); // NOTE: 2 stairs, 5 rows, 5 cols with AldousbroderMaze3dGenerator
+        let maze = aldousbroderMaze3dGenerator.generate(10, 50, 50); // NOTE: 2 stairs, 5 rows, 5 cols with AldousbroderMaze3dGenerator
         console.log(maze.toString());
 
         let adapterMaze3dToSearchableBfs = new AdapterMaze3dToSearchable(breadthFirstSearch, maze);
         let adapterMaze3dToSearchableDfs = new AdapterMaze3dToSearchable(depthFirstSearch, maze);
         let adapterMaze3dToSearchableAStar = new AdapterMaze3dToSearchable(aStar, maze);
 
+        // NOTE: Commented for the moment, BFS taking to much time to get result with big maze. Uncomment and change the size of maze if you want to test it.
         // NOTE: BFS Results :
-        let searchResultBfs = adapterMaze3dToSearchableBfs.search();
-        if (searchResultBfs === "failure") {
-            console.log("There is no solution for this maze!");
-        } else {
-            console.log("Optimal number of moves to go to the goal in this maze with BFS : " + (searchResultBfs.solution.length + 1)); // NOTE: If we count the last move to the goal cell we should add + 1 to the length.
-            console.log("Number of cell visited to find the solution to this maze with BFS : " + searchResultBfs.stateVisited);
-        }
+        // let searchResultBfs = adapterMaze3dToSearchableBfs.search();
+        // if (searchResultBfs === "failure") {
+        //     console.log("There is no solution for this maze!");
+        // } else {
+        //     console.log("Optimal number of moves to go to the goal in this maze with BFS : " + (searchResultBfs.solution.length + 1)); // NOTE: If we count the last move to the goal cell we should add + 1 to the length.
+        //     console.log("Number of cell visited to find the solution to this maze with BFS : " + searchResultBfs.stateVisited);
+        // }
 
         console.log("\n------------\n\n");
 
@@ -37,7 +38,7 @@ class SearchDemo {
         if (searchResultDfs === "failure") {
             console.log("There is no solution for this maze!");
         } else {
-            console.log("We can find at least one solution from start cell to goal cell by doing " + (searchResultBfs.solution.length + 1) + " moves (calculated by DFS).");
+            console.log("We can find at least one solution from start cell to goal cell by doing " + (searchResultDfs.solution.length + 1) + " moves (calculated by DFS). If they was more than one way to find a solution to this maze this number may not be the optimal number of moves to find a solution.");
             console.log("Number of cell visited to find the solution to this maze with DFS : " + searchResultDfs.stateVisited);
         }
 

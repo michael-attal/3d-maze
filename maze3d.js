@@ -40,7 +40,6 @@ class Cell {
         ["empty", " "],
         ["startPosition", "S"],
         ["goal", "G"],
-        ["player", "P"],
         ["elevatorUp", "↑"],
         ["elevatorDown", "↓"],
         ["elevatorUpAndDown", "↕"],
@@ -91,10 +90,10 @@ class Cell {
             right: true,
             forward: true,
             backward: true,
-            up: false,
-            down: false
+            up: true,
+            down: true
         };
-        this.content = " "; // NOTE: Init at empty cell, can be one of the following: empty -> " ", startPosition -> "S", goal -> "G", player -> "P", elevatorUp -> "↑", elevatorDown -> "↓", elevatorUpAndDown -> "↕"
+        this.content = " "; // NOTE: Init at empty cell, can be one of the following: empty -> " ", startPosition -> "S", goal -> "G", elevatorUp -> "↑", elevatorDown -> "↓", elevatorUpAndDown -> "↕"
 
         // NOTE: Save the position of the cell from the maze inside the cell itselft for simplicity of the code later
         this.#position = {
@@ -149,12 +148,15 @@ class Maze3d {
     #startCell // NOTE: The start cell of the maze
     /** @type {Cell} */
     #goalCell // NOTE: The exit cell of the maze is the goalCell
+    /** @type {Cell} */
+    #playerCell // NOTE: The current location of the player. (initialy at the start position of the maze)
 
     constructor(cells, startCell, goalCell) {
         // NOTE: z,y,x array of cell objects where z represent the stair, y the row and x the column. Example : cells[1][2][3] contain the cell at z=1, y=2, x=3 position in the maze
         this.cells = cells;
         this.startCell = startCell
         this.goalCell = goalCell;
+        this.playerCell = startCell;
     }
 
     get cells() {
@@ -182,6 +184,11 @@ class Maze3d {
         return this.#goalCell;
     }
 
+    /** @type {Cell} */
+    get playerCell() {
+        return this.#playerCell;
+    }
+
     getCell(x, y, z) {
         return this.#cells[z][y][x];
     }
@@ -202,6 +209,10 @@ class Maze3d {
         this.#goalCell = cell;
     }
 
+    set playerCell(cell) {
+        this.#playerCell = cell;
+    }
+
     get stairs() {
         return this.cells.length;
 
@@ -218,6 +229,17 @@ class Maze3d {
 
     get numberOfCells() {
         return this.stairs * this.rows * this.cols;
+    }
+
+    getCellIndexFromAllCells(cell) {
+        const stairCount = cell.stair * (this.rows * this.cols);
+        const rowCount = cell.row * this.cols;
+        const colCount = cell.col;
+        console.log(stairCount);
+        console.log(rowCount);
+        console.log(colCount);
+        console.log(stairCount + rowCount + colCount);
+        return stairCount + rowCount + colCount;
     }
 
     /**

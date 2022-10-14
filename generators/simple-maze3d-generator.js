@@ -50,15 +50,11 @@ class SimpleMaze3dGenerator extends Maze3DGenerator {
             /** @type {Cell} */
             let nextCell = directionAndRandomCell[1];
 
-            // NOTE: Don't override start cell content in any case
-            if (isCurrentCellStartCell === false) {
-                currentCell.content = Cell.getCellContentFromDirectionName(nextCellDirection.name); // NOTE: Don't forget to update the content of the current cell (add an elevator for example).
-            }
-
             // NOTE: Remove the wall between the current cell and the next cell if any
-            currentCell.walls[nextCellDirection.name] = false;
-            // NOTE: Remove the wall of the next cell to the opposite direction of the current cell
-            nextCell.walls[nextCellDirection.oppositeDirection] = false;
+            this.updateWallsForCurrentAndNextCells(currentCell, nextCell, nextCellDirection);
+
+            // NOTE: Update the content of the current and next cells (add elevators for example).
+            this.updateContentForCurrentAndNextCells(currentCell, nextCell, nextCellDirection);
 
             // NOTE: Set the next cell as the current cell for the next iteration
             currentCell = nextCell;
