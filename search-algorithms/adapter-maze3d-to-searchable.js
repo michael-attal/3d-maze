@@ -14,14 +14,15 @@ class AdapterMaze3dToSearchable {
     constructor(searchable, maze3d) {
         this.searchable = searchable;
         this.maze3d = maze3d;
+
     }
 
-    search() {
+    search(initialState = this.maze3d.startCell, goalCell = this.maze3d.goalCell) {
         let problem = {
-            initialState: this.maze3d.startCell,
-            goalState: this.maze3d.goalCell,
+            initialState: initialState,
+            goalState: goalCell,
             goalTest: (cell) => {
-                return cell === this.maze3d.goalCell;
+                return cell === goalCell;
             },
             actions: (currentCellToCheckNeighbours) => {
                 /** @type {Cell} */

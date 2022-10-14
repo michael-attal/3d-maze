@@ -25,7 +25,8 @@ class HandleActions {
 
     addDirectionListenerToPage() {
         document.body.addEventListener('keydown', e => {
-            if (this.#gui.maze && HandleActions.arrowKeyToDirectionName.has(e.key)) {
+            // NOTE: Handle move only if there is a generated maze and that the user is not editing an input field
+            if (this.#gui.maze && HandleActions.arrowKeyToDirectionName.has(e.key) && e.target.constructor.name != "HTMLInputElement") {
                 e.preventDefault();
                 let direction = Cell.availableDirections.find(direct => direct.name === HandleActions.arrowKeyToDirectionName.get(e.key));
                 let tryPosition = new DirectionHelper(direction.stair + this.#gui.maze.playerCell.stair, direction.row + this.#gui.maze.playerCell.row, direction.col + this.#gui.maze.playerCell.col, direction.name);
@@ -80,7 +81,9 @@ class HandleActions {
         const searchAlgo = this.#gui.searchAlgorithms.find(algo => algo.constructor.name === searchAlgoName);
         this.#gui.adapterToSearchAlgorithms.searchable = searchAlgo;
         this.#gui.adapterToSearchAlgorithms.maze3d = this.#gui.maze;
-        const result = this.#gui.adapterToSearchAlgorithms.search();
+        // NOTE: Use current player cell as initial state
+        const result = this.#gui.adapterToSearchAlgorithms.search(this.#gui.maze.playerCell);
+        console.log(result);
         if (result === "failure") {
             alert("Oops an error occured, no path to exit was finded for this maze :(")
         } else {
