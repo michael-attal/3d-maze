@@ -22,7 +22,7 @@ body {
     font-weight: bold;
 }
 
-#start-game-btn, #solve-game-btn, #save-game-btn, #load-game-btn {
+#start-game-btn, #get-hint-btn, #solve-game-btn, #save-game-btn, #load-game-btn {
     grid-column: 2;
 }
 

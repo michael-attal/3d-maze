@@ -159,6 +159,12 @@ class Maze3d {
         this.playerCell = startCell;
     }
 
+    static constructorFromJson() {
+        // FIXME À FAIRE:
+        // TODO: Implement this method
+        // return new Maze3d();
+    }
+
     get cells() {
         return this.#cells;
     }
@@ -338,6 +344,11 @@ class Maze3d {
             mazeStr += topAndBottomBorderOfMaze + "\n";
         }
         return mazeStr;
+    }
+
+    toJson() {
+        // FIXME À FAIRE:
+        // TODO: Implement this method
     }
 }
 

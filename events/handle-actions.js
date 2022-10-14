@@ -53,11 +53,14 @@ class HandleActions {
                 block: 'center',
                 inline: 'center'
             });
+            this.#gui.menuHtmlElements.getHintBtn.hidden = false; // NOTE: Allow user to get a hint for the current maze.
+            this.addListenerToGetHint();
             this.#gui.menuHtmlElements.searchAlgoLabel.hidden = false; // NOTE: Allow user to solve his game.
             this.addListenerToSolveGame();
             this.#gui.menuHtmlElements.searchAlgoSelect.hidden = false;
             this.#gui.menuHtmlElements.solveGameBtn.hidden = false;
             this.#gui.menuHtmlElements.saveGameBtn.hidden = false; // NOTE: Allow user to save his game.
+            this.addListenerToSaveGame();
             this.#gui.menuHtmlElements.loadGameBtn.hidden = true; // NOTE: Hide load a previous game if user has started a game.
         });
     }
@@ -65,6 +68,25 @@ class HandleActions {
     addListenerToSolveGame() {
         this.#gui.menuHtmlElements.solveGameBtn.addEventListener("click", e => {
             this.solveGameWithSearchAlgo(this.#gui.menuHtmlElements.searchAlgoSelect.value);
+        });
+    }
+
+    addListenerToGetHint() {
+        this.#gui.menuHtmlElements.getHintBtn.addEventListener("click", e => {
+            this.getHintWithSearchAlgo(this.#gui.menuHtmlElements.searchAlgoSelect.value);
+        });
+    }
+
+    addListenerToSaveGame() {
+        this.#gui.menuHtmlElements.saveGameBtn.addEventListener("click", e => {
+            this.saveGame(this.#gui.menuHtmlElements.nameInput.value);
+        });
+    }
+
+    addListenerToLoadGame() {
+        this.#gui.menuHtmlElements.loadGameBtn.addEventListener("click", e => {
+            const gameToLoad = prompt("Please provide the name of the maze to load");
+            this.loadGame(gameToLoad);
         });
     }
 
@@ -77,30 +99,57 @@ class HandleActions {
         }
     }
 
-    solveGameWithSearchAlgo(searchAlgoName) {
+    solveGameWithSearchAlgo(searchAlgoName, onlyGetHint = false) {
         const searchAlgo = this.#gui.searchAlgorithms.find(algo => algo.constructor.name === searchAlgoName);
         this.#gui.adapterToSearchAlgorithms.searchable = searchAlgo;
         this.#gui.adapterToSearchAlgorithms.maze3d = this.#gui.maze;
         // NOTE: Use current player cell as initial state
         const result = this.#gui.adapterToSearchAlgorithms.search(this.#gui.maze.playerCell);
-        console.log(result);
         if (result === "failure") {
             alert("Oops an error occured, no path to exit was finded for this maze :(")
         } else {
-            console.log(result);
             let moveSolutionIndex = result.solution.length - 1;
             const moveInterval = setInterval(() => {
-                if (moveSolutionIndex != -1) {
-                    this.movePlayerTo(result.solution[moveSolutionIndex].state);
-                } else {
+                if (onlyGetHint) {
                     clearInterval(moveInterval);
+                    this.#gui.displayHint(result.solution[moveSolutionIndex].state);
+                } else {
+                    if (moveSolutionIndex != -1) {
+                        this.movePlayerTo(result.solution[moveSolutionIndex].state);
+                    } else {
+                        clearInterval(moveInterval);
+                    }
+                    moveSolutionIndex--;
                 }
-                moveSolutionIndex--;
             }, 250);
         }
     }
 
+    getHintWithSearchAlgo(searchAlgoName) {
+        const onlyGetHint = true;
+        this.solveGameWithSearchAlgo(searchAlgoName, onlyGetHint);
+    }
 
+    saveGame(gameName) {
+        // NOTE: Save the current maze to the local storage.
+        // FIXME À FAIRE:
+        localStorage.setItem(gameName, this.#gui.maze.toJson());
+    }
+
+    loadGame(gameName) {
+        // NOTE: Load the maze from the local storage, print it and update the input fields value as well.
+        const maze = Maze3d.constructorFromJson(JSON.parse(localStorage.getItem(gameName)));
+        if (maze) {
+            this.#gui.maze = maze;
+            this.#gui.printMaze();
+            this.#gui.menuHtmlElements.nameInput.value = gameName;
+            this.#gui.menuHtmlElements.stairsInput.value = maze.stairs;
+            this.#gui.menuHtmlElements.rowsInput.value = maze.rows;
+            this.#gui.menuHtmlElements.colsInput.value = maze.cols;
+        } else {
+            alert("Oops, no maze was found with this name :(");
+        }
+    }
 
 }
 

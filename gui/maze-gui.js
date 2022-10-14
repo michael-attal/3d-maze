@@ -105,6 +105,11 @@ class MazeGui {
         solveGameBtn.textContent = "Solve game";
         solveGameBtn.hidden = true;
 
+        const getHintBtn = document.createElement("button");
+        getHintBtn.id = "get-hint-btn";
+        getHintBtn.textContent = "Get a hint";
+        getHintBtn.hidden = true;
+
         const saveGameBtn = document.createElement("button");
         saveGameBtn.id = "save-game-btn";
         saveGameBtn.textContent = "Save current game";
@@ -130,7 +135,7 @@ class MazeGui {
         searchAlgoLabel.setAttribute("for", searchAlgoSelect.id);
 
         // FIXME TO DELETE AFTER TEST FINISH
-        nameInput.value = "Michaël";
+        nameInput.value = "First maze of Michaël";
         stairsInput.value = "4";
         rowsInput.value = "5";
         colsInput.value = "5";
@@ -148,6 +153,7 @@ class MazeGui {
         menuSection.appendChild(startGameBtn);
         menuSection.appendChild(searchAlgoLabel);
         menuSection.appendChild(searchAlgoSelect);
+        menuSection.appendChild(getHintBtn);
         menuSection.appendChild(solveGameBtn);
         menuSection.appendChild(saveGameBtn);
         menuSection.appendChild(loadGameBtn);
@@ -164,13 +170,16 @@ class MazeGui {
             solveGameBtn: solveGameBtn,
             saveGameBtn: saveGameBtn,
             loadGameBtn: loadGameBtn,
+            getHintBtn: getHintBtn,
         }
 
         this.elemWhereToInsertTheGui.appendChild(menuSection);
         const mazeSection = document.createElement("section"); // NOTE: Create an empty section for a better UX when maze game is not started.
         mazeSection.id = "maze";
         this.elemWhereToInsertTheGui.appendChild(mazeSection);
+        // NOTE: Add the listeners after the elements are added to the DOM.
         this.handleActions.addListenerToStartGame();
+        this.handleActions.addListenerToLoadGame();
     }
 
     printMaze() {
@@ -308,17 +317,28 @@ class MazeGui {
         }
     }
 
-    getHint() {
-        // TODO: Call a function from a* for the next best move. (change the start position to the current player position)
-    }
+    /**
+     * 
+     * @param {Cell} cellToGo 
+     */
+    displayHint(cellToGo) {
+        // FIXME À FAIRE:
+        // TODO: Get the first item in solution from the searchable algorithm and print it in menu panel, e.g. "Try this: move to the right".
+        // Or add a background image with a hint arrow.
+        // Do the 2 things above.
+        console.log("continue here");
+        // NOTE: Get the cell div to add the hint image
+        const divHint = document.createElement("div");
+        divHint.className = "hint";
+        divHint.innerHTML = "Hint: ";
+        const cellIndexPosition = this.maze.getCellIndexFromAllCells(cellToGo);
+        const cellDiv = document.getElementsByClassName("cell")[cellIndexPosition];
+        // TODO: Finish here to add hint image (and remove the image after the user has a new position - remove also text hint).
 
-    saveMaze() {
-        // TODO: Create another class to save the maze ?
+        const menu = document.getElementById("menu");
+        // menu.appendChild(divHint);
 
-    }
-
-    loadMaze() {
-
+        console.log(cellToGo);
     }
 
     displayWinMessage() {

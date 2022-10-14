@@ -8,6 +8,7 @@ import AStar from './search-algorithms/a-star.js';
 import DepthFirstSearch from './search-algorithms/depth-first-search.js';
 import AdapterMaze3dToSearchable from './search-algorithms/adapter-maze3d-to-searchable.js';
 
+// FIXME TODO : REMOVE PREVIOUS LISTENER WHEN CLICK START NEW GAME BUTTON.
 
 // SECTION: Uncomment to see results
 // let maze;
