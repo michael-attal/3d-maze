@@ -1,12 +1,16 @@
 import HandleActions from "../events/handle-actions.js";
 import DfsMaze3dGenerator from "../generators/dfs-maze3d-generator.js";
 import { Cell, Maze3d } from "../maze3d.js";
+import AdapterMaze3dToSearchable from "../search-algorithms/adapter-maze3d-to-searchable.js";
+import { Searchable } from "../search-algorithms/searchable.js";
 
 class MazeGui {
     /** @type {Maze3d} */
     maze
     mazeGenerator
+    /** @type {Array<Searchable>} */
     searchAlgorithms
+    /** @type {AdapterMaze3dToSearchable} */
     adapterToSearchAlgorithms
     playerImage
     playerName
@@ -86,7 +90,11 @@ class MazeGui {
         const searchAlgoLabel = document.createElement("label");
         const searchAlgoSelect = document.createElement("select");
         for (const searchAlgo of this.searchAlgorithms) {
-            searchAlgoSelect.options.add(new Option(searchAlgo.constructor.name, searchAlgo.constructor.name));
+            const option = new Option(searchAlgo.constructor.name, searchAlgo.constructor.name);
+            if (searchAlgo.constructor.name === "AStar") {
+                option.selected = true;
+            }
+            searchAlgoSelect.options.add(option);
         }
         searchAlgoSelect.id = "search-algo";
         searchAlgoLabel.hidden = true; // NOTE: Hide until a maze is generated.
@@ -124,7 +132,7 @@ class MazeGui {
         // FIXME TO DELETE AFTER TEST FINISH
         nameInput.value = "Michaël";
         stairsInput.value = "4";
-        rowsInput.value = "3";
+        rowsInput.value = "5";
         colsInput.value = "5";
         // FIXME TO DELETE AFTER TEST FINISH
 
@@ -298,10 +306,6 @@ class MazeGui {
                 inline: 'center'
             });
         }
-    }
-
-    printSolution() {
-
     }
 
     getHint() {

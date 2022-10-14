@@ -53,6 +53,7 @@ class HandleActions {
                 inline: 'center'
             });
             this.#gui.menuHtmlElements.searchAlgoLabel.hidden = false; // NOTE: Allow user to solve his game.
+            this.addListenerToSolveGame();
             this.#gui.menuHtmlElements.searchAlgoSelect.hidden = false;
             this.#gui.menuHtmlElements.solveGameBtn.hidden = false;
             this.#gui.menuHtmlElements.saveGameBtn.hidden = false; // NOTE: Allow user to save his game.
@@ -62,7 +63,7 @@ class HandleActions {
 
     addListenerToSolveGame() {
         this.#gui.menuHtmlElements.solveGameBtn.addEventListener("click", e => {
-            // TODO: Appeler dans le gui le solve, qui fait appelle pour chaque cell dans solutions la fonction printMovePlayerToNewCell, tout les 0,5 secondes.
+            this.solveGameWithSearchAlgo(this.#gui.menuHtmlElements.searchAlgoSelect.value);
         });
     }
 
@@ -72,6 +73,27 @@ class HandleActions {
         this.#gui.printMovePlayerToNewCell(oldPlayerCell, newPlayerCell); // NOTE: Don't do a full print of the maze, but just update the 2 cells (for performance).
         if (newPlayerCell === this.#gui.maze.goalCell) {
             this.#gui.displayWinMessage();
+        }
+    }
+
+    solveGameWithSearchAlgo(searchAlgoName) {
+        const searchAlgo = this.#gui.searchAlgorithms.find(algo => algo.constructor.name === searchAlgoName);
+        this.#gui.adapterToSearchAlgorithms.searchable = searchAlgo;
+        this.#gui.adapterToSearchAlgorithms.maze3d = this.#gui.maze;
+        const result = this.#gui.adapterToSearchAlgorithms.search();
+        if (result === "failure") {
+            alert("Oops an error occured, no path to exit was finded for this maze :(")
+        } else {
+            console.log(result);
+            let moveSolutionIndex = result.solution.length - 1;
+            const moveInterval = setInterval(() => {
+                if (moveSolutionIndex != -1) {
+                    this.movePlayerTo(result.solution[moveSolutionIndex].state);
+                } else {
+                    clearInterval(moveInterval);
+                }
+                moveSolutionIndex--;
+            }, 250);
         }
     }
 
