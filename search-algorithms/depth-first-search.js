@@ -27,7 +27,7 @@ class DepthFirstSearch extends Searchable {
                     this.stateCounter++;
                     if (problem.goalTest(child.state)) {
                         return {
-                            solution: this.solution(node),
+                            solution: this.solution(child),
                             stateVisited: this.stateCounter,
                         }
                     }
