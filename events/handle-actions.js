@@ -128,6 +128,7 @@ class HandleActions {
     saveGame(gameName) {
         // NOTE: Save the current maze to the local storage.
         localStorage.setItem(gameName, JSON.stringify(this.#gui.maze.toJSON()));
+        alert(`Game saved with name: "${gameName}"`);
     }
 
     loadGame(gameName) {
