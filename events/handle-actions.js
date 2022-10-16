@@ -12,8 +12,8 @@ class HandleActions {
         ["PgUp", "up"],
         ["PgDn", "down"],
         // NOTE: For keyboard without PgUp and PgDn key
-        ["n", "up"],
-        ["b", "down"],
+        ["u", "up"],
+        ["d", "down"],
     ]);
     /** @type {MazeGui} */
     #gui
@@ -58,7 +58,7 @@ class HandleActions {
 
     addListenerToGetHint() {
         this.#gui.menuHtmlElements.getHintBtn.addEventListener("click", e => {
-            this.getHintWithSearchAlgo(this.#gui.menuHtmlElements.searchAlgoSelect.value);
+            this.getHint();
         });
     }
 
@@ -84,7 +84,7 @@ class HandleActions {
         }
     }
 
-    solveGameWithSearchAlgo(searchAlgoName, onlyGetHint = false) {
+    solveGameWithSearchAlgo(searchAlgoName, onlyGetFirstMove = false) {
         const searchAlgo = this.#gui.searchAlgorithms.find(algo => algo.constructor.name === searchAlgoName);
         this.#gui.adapterToSearchAlgorithms.searchable = searchAlgo;
         this.#gui.adapterToSearchAlgorithms.maze3d = this.#gui.maze;
@@ -95,9 +95,9 @@ class HandleActions {
         } else {
             let moveSolutionIndex = result.solution.length - 1;
             const moveInterval = setInterval(() => {
-                if (onlyGetHint) {
+                if (onlyGetFirstMove) {
+                    this.movePlayerTo(result.solution[moveSolutionIndex].state);
                     clearInterval(moveInterval);
-                    this.#gui.displayHint(result.solution[moveSolutionIndex].state);
                 } else {
                     if (moveSolutionIndex != -1) {
                         this.movePlayerTo(result.solution[moveSolutionIndex].state);
@@ -110,9 +110,19 @@ class HandleActions {
         }
     }
 
-    getHintWithSearchAlgo(searchAlgoName) {
-        const onlyGetHint = true;
-        this.solveGameWithSearchAlgo(searchAlgoName, onlyGetHint);
+    /**
+     * 
+     * @param {Array<String>} availableSearchAlgosNames 
+     */
+    getHint() {
+        // NOTE: Only get the first best move from the current player position with the A* search algorithm.
+        let searchAlgoName = "AStar"; // Best search algorithm
+        // NOTE: Check that the AStar exist in the select options, else take the available one.
+        if (!document.getElementById("search-algo").innerHTML.includes(`value="${searchAlgoName}"`)) {
+            searchAlgoName = this.#gui.menuHtmlElements.searchAlgoSelect.value;
+        }
+        const onlyGetFirstMove = true;
+        this.solveGameWithSearchAlgo(searchAlgoName, onlyGetFirstMove);
     }
 
     saveGame(gameName) {

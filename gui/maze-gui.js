@@ -224,7 +224,6 @@ class MazeGui {
 
                 if (key != "up" && key != "down") {
                     if (val === true) {
-                        // TODO: Change by adding a class, like .border-top-cell ...
                         cellDiv.style[wallsToBodersProperty.get(key)] = "5px solid black";
                     } else {
                         cellDiv.style[wallsToPaddingsProperty.get(key)] = "5px";
@@ -312,30 +311,6 @@ class MazeGui {
                 inline: 'center'
             });
         }
-    }
-
-    /**
-     * 
-     * @param {Cell} cellToGo 
-     */
-    displayHint(cellToGo) {
-        // FIXME À FAIRE:
-        // TODO: Get the first item in solution from the searchable algorithm and print it in menu panel, e.g. "Try this: move to the right".
-        // Or add a background image with a hint arrow.
-        // Do the 2 things aboves.
-        console.log("continue here");
-        // NOTE: Get the cell div to add the hint image
-        const divHint = document.createElement("div");
-        divHint.className = "hint";
-        divHint.innerHTML = "Hint: ";
-        const cellIndexPosition = this.maze.getCellIndexFromAllCells(cellToGo);
-        const cellDiv = document.getElementsByClassName("cell")[cellIndexPosition];
-        // TODO: Finish here to add hint image (and remove the image after the user has a new position - remove also text hint).
-
-        const menu = document.getElementById("menu");
-        // menu.appendChild(divHint);
-
-        console.log(cellToGo);
     }
 
     displayWinMessage() {
