@@ -13,7 +13,6 @@ class MazeGui {
     /** @type {AdapterMaze3dToSearchable} */
     adapterToSearchAlgorithms
     playerImage
-    playerName
     wallImage
     freeCaseImage
     elevatorUpImage
@@ -134,13 +133,11 @@ class MazeGui {
         searchAlgoLabel.textContent = "Search Algo";
         searchAlgoLabel.setAttribute("for", searchAlgoSelect.id);
 
-        // FIXME TO DELETE AFTER TEST FINISH
+        // NOTE: Add some defaults datas (we can leave it empty also)
         nameInput.value = "First maze of Michaël";
         stairsInput.value = "4";
         rowsInput.value = "5";
         colsInput.value = "5";
-        // FIXME TO DELETE AFTER TEST FINISH
-
 
         menuSection.appendChild(nameLabel);
         menuSection.appendChild(nameInput);
@@ -325,7 +322,7 @@ class MazeGui {
         // FIXME À FAIRE:
         // TODO: Get the first item in solution from the searchable algorithm and print it in menu panel, e.g. "Try this: move to the right".
         // Or add a background image with a hint arrow.
-        // Do the 2 things above.
+        // Do the 2 things aboves.
         console.log("continue here");
         // NOTE: Get the cell div to add the hint image
         const divHint = document.createElement("div");
@@ -342,18 +339,20 @@ class MazeGui {
     }
 
     displayWinMessage() {
-        const winMessageDiv = document.createElement("div");
-        winMessageDiv.id = "win-message";
-        winMessageDiv.innerHTML = `
-        <h3>Congratulations ${this.playerName} 🎉</h3>
+        if (document.getElementById("win-message") === null) {
+            const winMessageDiv = document.createElement("div");
+            winMessageDiv.id = "win-message";
+            winMessageDiv.innerHTML = `
+        <h3>Congratulations 🎉</h3>
         <p>You find the exit of the maze!<br>Try again with more stairs/rows/cols.</p>
         <a href="#" id="close-win-message">&times; Close this message</a>
         `;
-        document.getElementById("menu").appendChild(winMessageDiv);
-        const closeWinMessage = document.getElementById("close-win-message");
-        closeWinMessage.addEventListener("click", () => {
-            winMessageDiv.remove();
-        });
+            document.getElementById("menu").appendChild(winMessageDiv);
+            const closeWinMessage = document.getElementById("close-win-message");
+            closeWinMessage.addEventListener("click", () => {
+                winMessageDiv.remove();
+            });
+        }
     }
 
 }

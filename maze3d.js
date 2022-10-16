@@ -74,6 +74,14 @@ class Cell {
         return Cell.availableContents.get(Cell.contentNameFromDirectionName.get(name));
     }
 
+    static createCellFromJSON(walls, position, content) {
+        const cell = new Cell();
+        cell.walls = walls;
+        cell.position = position;
+        cell.content = content;
+        return cell;
+    }
+
     #walls
     #content
     #position
@@ -119,6 +127,10 @@ class Cell {
         return this.#walls;
     }
 
+    get position() {
+        return this.#position;
+    }
+
     get content() {
         return this.#content;
     }
@@ -131,6 +143,10 @@ class Cell {
         this.#content = content;
     }
 
+    set position(position) {
+        this.#position = position;
+    }
+
     toString() {
         let cellStrFormatted = "";
         cellStrFormatted += "Position of the cell: stair: " + this.stair + ", row: " + this.row + ", col: " + this.col + ".\n";
@@ -139,6 +155,13 @@ class Cell {
         return cellStrFormatted;
     }
 
+    toJSON() {
+        return {
+            walls: this.walls,
+            position: this.position,
+            content: this.content,
+        }
+    }
 }
 
 class Maze3d {
@@ -151,18 +174,60 @@ class Maze3d {
     /** @type {Cell} */
     #playerCell // NOTE: The current location of the player. (initialy at the start position of the maze)
 
-    constructor(cells, startCell, goalCell) {
+    static createMaze3dFromJSON(mazeJSON) {
+        const cellsJSON = mazeJSON.cells;
+        const startCellJSON = mazeJSON.startCell;
+        const playerCellJSON = mazeJSON.playerCell;
+        const goalCellJSON = mazeJSON.goalCell;
+        const limitMazeJSON = mazeJSON.limitMaze;
+
+        let cells = [];
+        let cellsFormatted = [];
+        let startCell;
+        let playerCell = false;
+        let goalCell;
+        for (let cell of cellsJSON) {
+            const newCell = Cell.createCellFromJSON(cell.walls, cell.position, cell.content);
+            cells.push(newCell);
+
+            if (JSON.stringify(playerCellJSON.position) === JSON.stringify(newCell.position)) {
+                playerCell = newCell;
+            }
+
+            if (JSON.stringify(startCellJSON.position) === JSON.stringify(newCell.position)) {
+                startCell = newCell;
+            } else if (JSON.stringify(goalCellJSON.position) === JSON.stringify(newCell.position)) {
+                goalCell = newCell;
+            }
+        }
+
+        // NOTE: Create the cells in a z, y, x formatted way
+        const stairs = limitMazeJSON.stairs;
+        const rows = limitMazeJSON.rows;
+        const cols = limitMazeJSON.cols;
+        for (let z = 0; z < stairs; z++) {
+            cellsFormatted[z] = [];
+            for (let y = 0; y < rows; y++) {
+                cellsFormatted[z][y] = [];
+                for (let x = 0; x < cols; x++) {
+                    cellsFormatted[z][y][x] = cells.shift();
+                }
+            }
+        }
+
+        return new Maze3d(cellsFormatted, startCell, goalCell, playerCell);
+    }
+
+    constructor(cells, startCell, goalCell, playerCell = false) {
         // NOTE: z,y,x array of cell objects where z represent the stair, y the row and x the column. Example : cells[1][2][3] contain the cell at z=1, y=2, x=3 position in the maze
         this.cells = cells;
         this.startCell = startCell
         this.goalCell = goalCell;
-        this.playerCell = startCell;
-    }
-
-    static constructorFromJson() {
-        // FIXME À FAIRE:
-        // TODO: Implement this method
-        // return new Maze3d();
+        if (playerCell) {
+            this.playerCell = playerCell;
+        } else {
+            this.playerCell = startCell;
+        }
     }
 
     get cells() {
@@ -346,9 +411,21 @@ class Maze3d {
         return mazeStr;
     }
 
-    toJson() {
-        // FIXME À FAIRE:
-        // TODO: Implement this method
+
+    toJSON() {
+        let cellsJSON = [];
+        for (let cell of this.allCells) {
+            cellsJSON.push(cell.toJSON());
+        }
+
+
+        return {
+            cells: cellsJSON,
+            startCell: this.startCell.toJSON(),
+            goalCell: this.goalCell.toJSON(),
+            playerCell: this.playerCell.toJSON(),
+            limitMaze: { stairs: this.stairs, rows: this.rows, cols: this.cols },
+        }
     }
 }
 

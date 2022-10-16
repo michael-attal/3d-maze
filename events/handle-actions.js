@@ -44,24 +44,9 @@ class HandleActions {
 
     addListenerToStartGame() {
         this.#gui.menuHtmlElements.startGameBtn.addEventListener("click", e => {
-            this.#gui.playerName = this.#gui.menuHtmlElements.nameInput.value;
             this.#gui.generateMaze(this.#gui.menuHtmlElements.stairsInput.value, this.#gui.menuHtmlElements.rowsInput.value, this.#gui.menuHtmlElements.colsInput.value);
             this.#gui.printMaze();
-            const playerStairDiv = document.getElementById("current-player-stair");
-            playerStairDiv.scrollIntoView({
-                behavior: 'auto',
-                block: 'center',
-                inline: 'center'
-            });
-            this.#gui.menuHtmlElements.getHintBtn.hidden = false; // NOTE: Allow user to get a hint for the current maze.
-            this.addListenerToGetHint();
-            this.#gui.menuHtmlElements.searchAlgoLabel.hidden = false; // NOTE: Allow user to solve his game.
-            this.addListenerToSolveGame();
-            this.#gui.menuHtmlElements.searchAlgoSelect.hidden = false;
-            this.#gui.menuHtmlElements.solveGameBtn.hidden = false;
-            this.#gui.menuHtmlElements.saveGameBtn.hidden = false; // NOTE: Allow user to save his game.
-            this.addListenerToSaveGame();
-            this.#gui.menuHtmlElements.loadGameBtn.hidden = true; // NOTE: Hide load a previous game if user has started a game.
+            this.initGameStart();
         });
     }
 
@@ -132,23 +117,43 @@ class HandleActions {
 
     saveGame(gameName) {
         // NOTE: Save the current maze to the local storage.
-        // FIXME À FAIRE:
-        localStorage.setItem(gameName, this.#gui.maze.toJson());
+        localStorage.setItem(gameName, JSON.stringify(this.#gui.maze.toJSON()));
     }
 
     loadGame(gameName) {
         // NOTE: Load the maze from the local storage, print it and update the input fields value as well.
-        const maze = Maze3d.constructorFromJson(JSON.parse(localStorage.getItem(gameName)));
-        if (maze) {
+        const mazeStored = localStorage.getItem(gameName);
+        if (mazeStored) {
+            const maze = Maze3d.createMaze3dFromJSON(JSON.parse(mazeStored));
             this.#gui.maze = maze;
             this.#gui.printMaze();
             this.#gui.menuHtmlElements.nameInput.value = gameName;
             this.#gui.menuHtmlElements.stairsInput.value = maze.stairs;
             this.#gui.menuHtmlElements.rowsInput.value = maze.rows;
             this.#gui.menuHtmlElements.colsInput.value = maze.cols;
+            this.initGameStart();
+            alert("Game loaded!");
         } else {
-            alert("Oops, no maze was found with this name :(");
+            alert("Error: No maze found with this name!");
         }
+    }
+
+    initGameStart() {
+        const playerStairDiv = document.getElementById("current-player-stair");
+        playerStairDiv.scrollIntoView({
+            behavior: 'auto',
+            block: 'center',
+            inline: 'center'
+        });
+        this.#gui.menuHtmlElements.getHintBtn.hidden = false; // NOTE: Allow user to get a hint for the current maze.
+        this.addListenerToGetHint();
+        this.#gui.menuHtmlElements.searchAlgoLabel.hidden = false; // NOTE: Allow user to solve his game.
+        this.addListenerToSolveGame();
+        this.#gui.menuHtmlElements.searchAlgoSelect.hidden = false;
+        this.#gui.menuHtmlElements.solveGameBtn.hidden = false;
+        this.#gui.menuHtmlElements.saveGameBtn.hidden = false; // NOTE: Allow user to save his game.
+        this.addListenerToSaveGame();
+        this.#gui.menuHtmlElements.loadGameBtn.hidden = true; // NOTE: Hide load a previous game if user has started a game.
     }
 
 }
